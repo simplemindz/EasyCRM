@@ -77,28 +77,53 @@ const demoPartners: Partner[] = [
 
 const storageKey = "easycrm_partners";
 
-function isHttpUrl(value: string) {
+type SupabaseConnection = {
+  client: SupabaseClient | null;
+  error: string;
+};
+
+function parseHttpUrl(value: string) {
   try {
     const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
+    return url.protocol === "http:" || url.protocol === "https:" ? url : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
-function getSupabaseClient(): SupabaseClient | null {
+function getSupabaseConnection(): SupabaseConnection {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !anonKey) {
-    return null;
+    return { client: null, error: "" };
   }
 
-  if (!isHttpUrl(url)) {
-    return null;
+  const parsedUrl = parseHttpUrl(url.trim());
+
+  if (!parsedUrl) {
+    return {
+      client: null,
+      error:
+        "NEXT_PUBLIC_SUPABASE_URL musi być pełnym adresem zaczynającym się od https://"
+    };
   }
 
-  return createClient(url, anonKey);
+  const hasExtraPath =
+    parsedUrl.pathname !== "" && parsedUrl.pathname !== "/";
+
+  if (hasExtraPath || !parsedUrl.hostname.endsWith(".supabase.co")) {
+    return {
+      client: null,
+      error:
+        "NEXT_PUBLIC_SUPABASE_URL musi być czystym Project URL z Supabase, np. https://xxxxxxxxxxxx.supabase.co"
+    };
+  }
+
+  return {
+    client: createClient(parsedUrl.origin, anonKey.trim()),
+    error: ""
+  };
 }
 
 function createPartner(draft: PartnerDraft): Partner {
@@ -111,7 +136,8 @@ function createPartner(draft: PartnerDraft): Partner {
 }
 
 export default function Home() {
-  const supabase = useMemo(() => getSupabaseClient(), []);
+  const supabaseConnection = useMemo(() => getSupabaseConnection(), []);
+  const supabase = supabaseConnection.client;
   const [partners, setPartners] = useState<Partner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -124,12 +150,8 @@ export default function Home() {
 
   useEffect(() => {
     async function loadPartners() {
-      const configuredUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-
-      if (configuredUrl && !isHttpUrl(configuredUrl)) {
-        setErrorMessage(
-          "NEXT_PUBLIC_SUPABASE_URL musi być pełnym adresem zaczynającym się od https://"
-        );
+      if (supabaseConnection.error) {
+        setErrorMessage(supabaseConnection.error);
       }
 
       if (supabase) {
@@ -155,7 +177,7 @@ export default function Home() {
     }
 
     loadPartners();
-  }, [supabase]);
+  }, [supabase, supabaseConnection.error]);
 
   useEffect(() => {
     if (!supabase && !isLoading) {
