@@ -425,7 +425,7 @@ export default function Home() {
   return (
     <main className="appShell">
       <aside className="sidebar" aria-label="Menu boczne">
-        <img className="brandLogo" src="/logo.svg" alt="EasyCRM" />
+        <img className="brandLogo" src="/logo.svg?v=20260624" alt="EasyCRM" />
         <nav className="navList">
           <span className="navItem muted">
             <HomeIcon size={24} aria-hidden="true" />
