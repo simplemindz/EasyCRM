@@ -7,9 +7,9 @@ import {
   ChevronDown,
   Handshake,
   Home as HomeIcon,
-  MoreHorizontal,
   Plus,
   Settings,
+  Trash2,
   X
 } from "lucide-react";
 import { type FormEvent, type ReactNode, useEffect, useMemo, useState } from "react";
@@ -21,6 +21,7 @@ type RelationStatus =
   | "nieznany";
 
 type ActionStatus = "nadchodzące" | "wykonane";
+type PartnerSort = "next" | "name";
 
 type Partner = {
   id: string;
@@ -202,6 +203,8 @@ export default function Home() {
   const [actionDraft, setActionDraft] = useState<ActionDraft>(emptyActionDraft);
   const [actionRelationStatus, setActionRelationStatus] =
     useState<RelationStatus>("nieznany");
+  const [partnerSort, setPartnerSort] = useState<PartnerSort>("next");
+  const [deleteTarget, setDeleteTarget] = useState<Partner | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -265,10 +268,23 @@ export default function Home() {
     [partners]
   );
 
-  const partnersWithNextActions = partners.map((partner) => ({
-    partner,
-    nextAction: upcomingActions.find((action) => action.partner_id === partner.id)
-  }));
+  const partnersWithNextActions = partners
+    .map((partner) => ({
+      partner,
+      nextAction: upcomingActions.find(
+        (action) => action.partner_id === partner.id
+      )
+    }))
+    .sort((first, second) => {
+      if (partnerSort === "name") {
+        return first.partner.name.localeCompare(second.partner.name, "pl");
+      }
+
+      return (
+        getDateTimestamp(first.nextAction?.action_date) -
+        getDateTimestamp(second.nextAction?.action_date)
+      );
+    });
 
   function openActionModal(partnerId = "") {
     const selectedPartnerId = partnerId || partners[0]?.id || "";
@@ -378,10 +394,36 @@ export default function Home() {
     );
   }
 
+  async function confirmDeletePartner() {
+    if (!deleteTarget) {
+      return;
+    }
+
+    if (supabase) {
+      const { error } = await supabase
+        .from("partners")
+        .delete()
+        .eq("id", deleteTarget.id);
+
+      if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
+    }
+
+    setPartners((current) =>
+      current.filter((partner) => partner.id !== deleteTarget.id)
+    );
+    setActions((current) =>
+      current.filter((action) => action.partner_id !== deleteTarget.id)
+    );
+    setDeleteTarget(null);
+  }
+
   return (
     <main className="appShell">
       <aside className="sidebar" aria-label="Menu boczne">
-        <div className="brandMark" aria-hidden="true" />
+        <img className="brandLogo" src="/logo.svg" alt="EasyCRM" />
         <nav className="navList">
           <span className="navItem muted">
             <HomeIcon size={24} aria-hidden="true" />
@@ -464,9 +506,13 @@ export default function Home() {
             <h2>Partnerzy</h2>
             <label className="sortControl">
               <span>Sortuj po:</span>
-              <select defaultValue="next">
+              <select
+                value={partnerSort}
+                onChange={(event) =>
+                  setPartnerSort(event.target.value as PartnerSort)
+                }
+              >
                 <option value="next">Data następnego kontaktu</option>
-                <option value="last">Data ostatniego kontaktu</option>
                 <option value="name">Nazwa partnera</option>
               </select>
               <ChevronDown size={20} aria-hidden="true" />
@@ -515,12 +561,13 @@ export default function Home() {
                   )}
                 </div>
                 <button
-                  className="detailsButton"
+                  className="deleteButton"
                   type="button"
-                  title="Szczegóły partnera"
-                  aria-label={`Szczegóły partnera ${partner.name}`}
+                  title="Usuń partnera"
+                  aria-label={`Usuń partnera ${partner.name}`}
+                  onClick={() => setDeleteTarget(partner)}
                 >
-                  <MoreHorizontal size={26} aria-hidden="true" />
+                  <Trash2 size={22} aria-hidden="true" />
                 </button>
               </article>
             ))}
@@ -658,6 +705,15 @@ export default function Home() {
           </form>
         </Modal>
       ) : null}
+
+      {deleteTarget ? (
+        <ConfirmModal
+          title="Usunąć partnera?"
+          message={`Czy na pewno chcesz usunąć partnera ${deleteTarget.name}? Powiązane działania też znikną z listy.`}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={confirmDeletePartner}
+        />
+      ) : null}
     </main>
   );
 }
@@ -721,6 +777,36 @@ function ModalActions({ onCancel }: { onCancel: () => void }) {
   );
 }
 
+function ConfirmModal({
+  title,
+  message,
+  onCancel,
+  onConfirm
+}: {
+  title: string;
+  message: string;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="modalBackdrop" role="dialog" aria-modal="true">
+      <section className="modalPanel confirmPanel">
+        <h2>{title}</h2>
+        <p>{message}</p>
+        <div className="modalActions">
+          <button type="button" onClick={onCancel}>
+            Anuluj
+          </button>
+          <button type="button" className="dangerAction" onClick={onConfirm}>
+            <Trash2 size={20} aria-hidden="true" />
+            Usuń
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function StatusButton({
   value,
   onChange
@@ -765,4 +851,12 @@ function formatDate(value: string) {
   }
 
   return new Intl.DateTimeFormat("pl-PL").format(new Date(value));
+}
+
+function getDateTimestamp(value?: string) {
+  if (!value) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  return new Date(value).getTime();
 }

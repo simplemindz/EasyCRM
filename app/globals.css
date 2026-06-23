@@ -1,13 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap");
+
 :root {
   --text: #f7f7f7;
   --muted: rgba(247, 247, 247, 0.62);
   --faint: rgba(247, 247, 247, 0.36);
-  --panel: rgba(58, 58, 58, 0.68);
-  --panel-strong: rgba(72, 72, 72, 0.72);
-  --row: rgba(66, 66, 66, 0.78);
-  --input: rgba(9, 9, 9, 0.78);
+  --panel: rgba(34, 34, 34, 0.76);
+  --panel-strong: rgba(44, 44, 44, 0.82);
+  --row: rgba(42, 42, 42, 0.84);
+  --input: rgba(4, 4, 4, 0.84);
   --line: rgba(255, 255, 255, 0.12);
   --shadow: 0 28px 90px rgba(0, 0, 0, 0.48);
+  --radius: 24px;
+  --radius-large: 30px;
 }
 
 * {
@@ -23,9 +27,7 @@ body {
 body {
   background: #050505;
   color: var(--text);
-  font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  font-family: Poppins, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 button,
@@ -66,20 +68,16 @@ button {
 }
 
 .sidebar {
-  background: rgba(8, 8, 8, 0.58);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   padding: 54px 26px 34px;
 }
 
-.brandMark {
-  border-left: 14px solid #ffffff;
-  border-top: 14px solid #ffffff;
-  border-radius: 21px 0 0;
+.brandLogo {
   height: 54px;
   margin: 0 auto 86px;
+  object-fit: contain;
   width: 54px;
 }
 
@@ -92,7 +90,8 @@ button {
   align-items: center;
   color: var(--text);
   display: flex;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: 700;
   gap: 16px;
 }
 
@@ -109,12 +108,12 @@ button {
 
 .userBlock span,
 .userBlock small {
-  font-size: 12px;
+  font-size: 10px;
 }
 
 .userBlock strong {
   color: rgba(255, 255, 255, 0.82);
-  font-size: 14px;
+  font-size: 11px;
   margin-top: 12px;
 }
 
@@ -151,7 +150,7 @@ button {
 }
 
 .glassPanel {
-  border-radius: 8px;
+  border-radius: var(--radius-large);
 }
 
 .actionsPanel {
@@ -167,11 +166,11 @@ h2 {
 }
 
 h1 {
-  font-size: 27px;
+  font-size: 22px;
 }
 
 h2 {
-  font-size: 28px;
+  font-size: 22px;
 }
 
 .actionsList {
@@ -190,12 +189,12 @@ h2 {
 .actionRow > time,
 .partnerRow > time {
   color: rgba(255, 255, 255, 0.76);
-  font-size: 19px;
+  font-size: 15px;
 }
 
 .actionBody {
   align-items: center;
-  background: rgba(12, 12, 12, 0.82);
+  background: rgba(5, 5, 5, 0.86);
   border-radius: 999px;
   display: grid;
   gap: 16px;
@@ -206,13 +205,13 @@ h2 {
 
 .actionBody strong,
 .partnerRow strong {
-  font-size: 16px;
+  font-size: 13px;
 }
 
 .actionBody span,
 .actionBody p {
   color: rgba(255, 255, 255, 0.72);
-  font-size: 13px;
+  font-size: 10px;
 }
 
 .actionBody p {
@@ -229,10 +228,10 @@ h2 {
 
 .quickButton {
   align-items: center;
-  border-radius: 8px;
+  border-radius: var(--radius-large);
   color: rgba(255, 255, 255, 0.42);
   display: flex;
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 800;
   gap: 8px;
   justify-content: center;
@@ -244,7 +243,7 @@ h2 {
 }
 
 .quickButton:hover {
-  background: rgba(80, 80, 80, 0.72);
+  background: rgba(36, 36, 36, 0.88);
   color: rgba(255, 255, 255, 0.78);
 }
 
@@ -267,7 +266,7 @@ h2 {
 }
 
 .sortControl span {
-  font-size: 13px;
+  font-size: 10px;
 }
 
 .sortControl,
@@ -283,6 +282,7 @@ h2 {
   border: 0;
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.82);
+  font-size: 11px;
   min-height: 44px;
   outline: 0;
   padding: 0 48px 0 18px;
@@ -307,7 +307,7 @@ h2 {
 
 .partnersHeader {
   color: rgba(255, 255, 255, 0.56);
-  font-size: 12px;
+  font-size: 10px;
   margin: 0 0 10px;
   padding: 0 48px;
 }
@@ -315,12 +315,31 @@ h2 {
 .partnerRows {
   display: grid;
   gap: 13px;
+  max-height: 390px;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-color: rgba(255, 255, 255, 0.45) rgba(0, 0, 0, 0.24);
+  scrollbar-width: thin;
+}
+
+.partnerRows::-webkit-scrollbar {
+  width: 8px;
+}
+
+.partnerRows::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.24);
+  border-radius: 999px;
+}
+
+.partnerRows::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
 }
 
 .partnerRow {
   align-items: center;
   background: var(--row);
-  border-radius: 8px;
+  border-radius: var(--radius);
   min-height: 74px;
   padding: 0 32px 0 48px;
 }
@@ -330,7 +349,7 @@ h2 {
 .statusSelect,
 .ghostAction {
   align-items: center;
-  background: rgba(15, 15, 15, 0.84);
+  background: rgba(6, 6, 6, 0.88);
   border-radius: 999px;
   display: flex;
   min-height: 50px;
@@ -338,6 +357,7 @@ h2 {
 
 .relationStatus {
   color: rgba(255, 255, 255, 0.74);
+  font-size: 11px;
   gap: 14px;
   justify-content: space-between;
   padding: 0 18px 0 14px;
@@ -375,6 +395,7 @@ h2 {
 .nextAction time,
 .nextAction span {
   color: rgba(255, 255, 255, 0.76);
+  font-size: 11px;
 }
 
 .nextAction span {
@@ -387,6 +408,7 @@ h2 {
 .ghostAction {
   border: 0;
   color: rgba(255, 255, 255, 0.62);
+  font-size: 11px;
   justify-content: center;
   width: 100%;
 }
@@ -403,27 +425,35 @@ h2 {
 }
 
 .statusSelect select {
-  font-size: 12px;
+  font-size: 10px;
   min-height: 34px;
   padding-left: 10px;
   width: 100%;
 }
 
-.detailsButton {
+.deleteButton {
   align-items: center;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.34);
   border: 0;
-  color: #ffffff;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.82);
   display: flex;
-  justify-content: flex-end;
+  height: 38px;
+  justify-content: center;
   padding: 0;
+  width: 38px;
+}
+
+.deleteButton:hover {
+  background: rgba(190, 32, 32, 0.75);
+  color: #ffffff;
 }
 
 .notice {
   align-items: center;
   background: rgba(110, 18, 18, 0.82);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
+  border-radius: var(--radius);
   color: #ffffff;
   display: flex;
   justify-content: space-between;
@@ -456,14 +486,14 @@ h2 {
 }
 
 .modalPanel {
-  border-radius: 8px;
+  border-radius: var(--radius-large);
   max-width: 1810px;
   padding: 48px 48px 54px;
   width: min(92vw, 1810px);
 }
 
 .modalPanel h2 {
-  font-size: 34px;
+  font-size: 27px;
   font-weight: 800;
   margin-bottom: 44px;
   text-align: center;
@@ -502,7 +532,7 @@ h2 {
 
 .field span {
   color: rgba(255, 255, 255, 0.72);
-  font-size: 16px;
+  font-size: 13px;
   text-align: center;
 }
 
@@ -510,12 +540,22 @@ h2 {
 .field select {
   background: var(--input);
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius);
   color: #ffffff;
   min-height: 90px;
   outline: 0;
   padding: 0 28px;
   width: 100%;
+}
+
+.field input[type="date"] {
+  color-scheme: dark;
+}
+
+.field input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(1);
+  opacity: 0.8;
 }
 
 .field input:focus,
@@ -538,11 +578,31 @@ h2 {
   border: 0;
   color: #ffffff;
   display: inline-flex;
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 800;
   gap: 10px;
   justify-content: center;
   min-height: 56px;
+}
+
+.confirmPanel {
+  max-width: 720px;
+}
+
+.confirmPanel p {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: -16px 0 0;
+  text-align: center;
+}
+
+.modalActions .dangerAction {
+  color: #ffb3b3;
+}
+
+.modalActions .dangerAction:hover {
+  color: #ffffff;
 }
 
 @media (max-width: 1300px) {
@@ -559,7 +619,7 @@ h2 {
     display: none;
   }
 
-  .brandMark {
+  .brandLogo {
     margin-bottom: 72px;
   }
 
@@ -600,7 +660,7 @@ h2 {
     padding: 18px;
   }
 
-  .brandMark {
+  .brandLogo {
     height: 34px;
     margin: 0;
     width: 34px;
@@ -625,7 +685,7 @@ h2 {
   }
 
   .actionBody {
-    border-radius: 8px;
+    border-radius: var(--radius);
     grid-template-columns: 1fr;
     padding: 18px;
   }
