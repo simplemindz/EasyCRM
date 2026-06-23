@@ -77,11 +77,24 @@ const demoPartners: Partner[] = [
 
 const storageKey = "easycrm_partners";
 
+function isHttpUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 function getSupabaseClient(): SupabaseClient | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !anonKey) {
+    return null;
+  }
+
+  if (!isHttpUrl(url)) {
     return null;
   }
 
@@ -111,6 +124,14 @@ export default function Home() {
 
   useEffect(() => {
     async function loadPartners() {
+      const configuredUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+      if (configuredUrl && !isHttpUrl(configuredUrl)) {
+        setErrorMessage(
+          "NEXT_PUBLIC_SUPABASE_URL musi być pełnym adresem zaczynającym się od https://"
+        );
+      }
+
       if (supabase) {
         const { data, error } = await supabase
           .from("partners")
