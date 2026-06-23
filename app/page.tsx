@@ -109,14 +109,11 @@ function getSupabaseConnection(): SupabaseConnection {
     };
   }
 
-  const hasExtraPath =
-    parsedUrl.pathname !== "" && parsedUrl.pathname !== "/";
-
-  if (hasExtraPath || !parsedUrl.hostname.endsWith(".supabase.co")) {
+  if (!parsedUrl.hostname.endsWith(".supabase.co")) {
     return {
       client: null,
       error:
-        "NEXT_PUBLIC_SUPABASE_URL musi być czystym Project URL z Supabase, np. https://xxxxxxxxxxxx.supabase.co"
+        "NEXT_PUBLIC_SUPABASE_URL musi wskazywać na projekt Supabase, np. https://xxxxxxxxxxxx.supabase.co"
     };
   }
 
