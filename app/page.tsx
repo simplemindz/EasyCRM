@@ -396,6 +396,29 @@ export default function Home() {
     );
   }
 
+  async function updatePartnerStatus(
+    partner: Partner,
+    relation_status: RelationStatus
+  ) {
+    if (supabase) {
+      const { error } = await supabase
+        .from("partners")
+        .update({ relation_status })
+        .eq("id", partner.id);
+
+      if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
+    }
+
+    setPartners((current) =>
+      current.map((item) =>
+        item.id === partner.id ? { ...item, relation_status } : item
+      )
+    );
+  }
+
   async function confirmDeletePartner() {
     if (!deleteTarget) {
       return;
@@ -533,14 +556,10 @@ export default function Home() {
               <article className="partnerRow" key={partner.id}>
                 <strong>{partner.name}</strong>
                 <time>{formatDate(partner.last_contact_date)}</time>
-                <span className="relationStatus">
-                  <span
-                    className={`statusDot ${getStatusTone(partner.relation_status)}`}
-                    aria-hidden="true"
-                  />
-                  {partner.relation_status}
-                  <ChevronDown size={18} aria-hidden="true" />
-                </span>
+                <RelationStatusSelect
+                  value={partner.relation_status}
+                  onChange={(status) => updatePartnerStatus(partner, status)}
+                />
                 <div className="nextAction">
                   {nextAction ? (
                     <>
@@ -665,20 +684,27 @@ export default function Home() {
                 ))}
               </select>
             </label>
-            <label className="field">
+            <label className="field relationStatusField">
               <span>Aktualizuj status relacji</span>
-              <select
-                value={actionRelationStatus}
-                onChange={(event) =>
-                  setActionRelationStatus(event.target.value as RelationStatus)
-                }
-              >
-                {relationStatuses.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
+              <div className="modalStatusSelect">
+                <span
+                  className={`statusDot ${getStatusTone(actionRelationStatus)}`}
+                  aria-hidden="true"
+                />
+                <select
+                  value={actionRelationStatus}
+                  onChange={(event) =>
+                    setActionRelationStatus(event.target.value as RelationStatus)
+                  }
+                >
+                  {relationStatuses.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown size={22} aria-hidden="true" />
+              </div>
             </label>
             <Field
               label="Data"
@@ -825,6 +851,34 @@ function StatusButton({
       >
         <option value="nadchodzące">Nadchodzące</option>
         <option value="wykonane">Wykonane</option>
+      </select>
+      <ChevronDown size={18} aria-hidden="true" />
+    </label>
+  );
+}
+
+function RelationStatusSelect({
+  value,
+  onChange
+}: {
+  value: RelationStatus;
+  onChange: (status: RelationStatus) => void;
+}) {
+  return (
+    <label className="relationStatus">
+      <span
+        className={`statusDot ${getStatusTone(value)}`}
+        aria-hidden="true"
+      />
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value as RelationStatus)}
+      >
+        {relationStatuses.map((status) => (
+          <option key={status} value={status}>
+            {status}
+          </option>
+        ))}
       </select>
       <ChevronDown size={18} aria-hidden="true" />
     </label>
