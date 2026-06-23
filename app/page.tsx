@@ -219,17 +219,19 @@ export default function Home() {
           supabase.from("actions").select("*").order("action_date")
         ]);
 
-        if (partnersResult.error || actionsResult.error) {
-          setErrorMessage(
-            partnersResult.error?.message ??
-              actionsResult.error?.message ??
-              "Nie udało się pobrać danych."
-          );
+        if (partnersResult.error) {
+          setErrorMessage(partnersResult.error.message);
           setPartners([]);
           setActions([]);
         } else {
           setPartners(partnersResult.data ?? []);
-          setActions(actionsResult.data ?? []);
+          setActions(actionsResult.error ? [] : (actionsResult.data ?? []));
+
+          if (actionsResult.error) {
+            setErrorMessage(
+              `${actionsResult.error.message}. Uruchom migrację supabase/migration_v02_relations.sql w Supabase SQL Editor.`
+            );
+          }
         }
 
         setIsLoading(false);

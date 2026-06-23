@@ -58,6 +58,8 @@ begin
   end if;
 end $$;
 
+notify pgrst, 'reload schema';
+
 alter table public.partners
   drop column if exists comment;
 
