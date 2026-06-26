@@ -527,7 +527,7 @@ export default function Home() {
                 <p className="emptyState">Brak zaplanowanych działań.</p>
               ) : null}
 
-              {upcomingActions.slice(0, 7).map((action) => {
+                {upcomingActions.map((action) => {
                 const partner = partnerLookup.get(action.partner_id);
 
                 return (

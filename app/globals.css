@@ -197,8 +197,12 @@ h2 {
   align-content: start;
   display: grid;
   gap: 12px;
+  grid-auto-rows: max-content;
   min-height: 0;
   overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-color: rgba(255, 255, 255, 0.45) rgba(0, 0, 0, 0.24);
+  scrollbar-width: thin;
 }
 
 .actionRow {
@@ -389,15 +393,18 @@ h2 {
   scrollbar-width: thin;
 }
 
+.actionsList::-webkit-scrollbar,
 .partnerRows::-webkit-scrollbar {
   width: 8px;
 }
 
+.actionsList::-webkit-scrollbar-track,
 .partnerRows::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.24);
   border-radius: 999px;
 }
 
+.actionsList::-webkit-scrollbar-thumb,
 .partnerRows::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.42);
   border-radius: 999px;
