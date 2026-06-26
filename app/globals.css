@@ -273,15 +273,19 @@ h2 {
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  padding: 20px 18px 24px;
+  padding: 14px 18px 20px;
 }
 
 .panelHeader {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  min-height: 32px;
+  min-height: 28px;
   padding: 0 16px 0 20px;
+}
+
+.partnersPanel .panelHeader h1 {
+  font-size: 16px;
 }
 
 .panelArrows {
@@ -313,17 +317,21 @@ h2 {
   display: flex;
   flex: 1;
   flex-direction: column;
-  margin-top: 28px;
+  margin-top: 14px;
   min-height: 0;
   overflow: hidden;
-  padding: 18px 18px 22px;
+  padding: 14px 18px 18px;
+  position: relative;
 }
 
 .panelToolbar {
   display: flex;
   justify-content: flex-end;
-  min-height: 44px;
-  padding: 0 8px 8px;
+  padding: 0;
+  position: absolute;
+  right: 26px;
+  top: 14px;
+  z-index: 1;
 }
 
 .sortControl {
@@ -374,9 +382,11 @@ h2 {
 }
 
 .partnersHeader {
+  align-items: center;
   color: rgba(255, 255, 255, 0.56);
   font-size: 8.5px;
-  margin: 0 0 9px;
+  min-height: 40px;
+  margin: 0 0 8px;
   padding: 0 36px 0 32px;
 }
 
@@ -417,6 +427,328 @@ h2 {
   height: 64px;
   min-height: 0;
   padding: 0 18px 0 32px;
+}
+
+.openPartnerButton {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.34);
+  border: 0;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.82);
+  display: flex;
+  height: 30px;
+  justify-content: center;
+  padding: 0;
+  width: 30px;
+}
+
+.openPartnerButton:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.partnerDetails {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.partnerDetailsTop {
+  align-items: center;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(240px, 0.7fr) minmax(520px, 1.1fr) minmax(0, 0.35fr);
+  margin-bottom: 22px;
+}
+
+.partnerDetailsTop h2 {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.partnerTabs {
+  background: rgba(4, 4, 4, 0.82);
+  border-radius: 999px;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  min-height: 46px;
+  padding: 6px;
+}
+
+.partnerTabs button {
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 12px;
+}
+
+.partnerTabs button.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.partnerDetailsBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-color: rgba(255, 255, 255, 0.45) rgba(0, 0, 0, 0.24);
+  scrollbar-width: thin;
+}
+
+.partnerDetailsBody::-webkit-scrollbar {
+  width: 8px;
+}
+
+.partnerDetailsBody::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.24);
+  border-radius: 999px;
+}
+
+.partnerDetailsBody::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+}
+
+.detailsGrid {
+  display: grid;
+  gap: 18px 22px;
+}
+
+.generalGrid {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.58fr) minmax(0, 0.58fr) minmax(0, 1.22fr);
+}
+
+.detailField,
+.detailArea,
+.detailCard,
+.detailsTableCard,
+.accountPanel,
+.accountSettings,
+.historyPanel {
+  color: rgba(255, 255, 255, 0.74);
+  display: grid;
+  gap: 12px;
+}
+
+.detailField span,
+.detailArea span,
+.detailCard > span,
+.detailsTableCard > span,
+.accountPanel > span,
+.accountSettings > span,
+.historyPanel > span {
+  font-size: 10px;
+}
+
+.detailField input,
+.detailArea textarea,
+.contactRow,
+.detailsTableRow,
+.accountRow,
+.accountHeader,
+.historyRow {
+  background: rgba(18, 18, 18, 0.58);
+  border: 0;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.84);
+  min-height: 42px;
+  outline: 0;
+  padding: 0 24px;
+}
+
+.detailField input {
+  width: 100%;
+}
+
+.detailField.wide {
+  grid-column: span 2;
+}
+
+.detailArea {
+  grid-column: span 2;
+}
+
+.detailArea textarea {
+  border-radius: 20px;
+  min-height: 260px;
+  padding: 18px 24px;
+  resize: none;
+}
+
+.detailCard,
+.detailsTableCard,
+.accountPanel {
+  background: rgba(18, 18, 18, 0.34);
+  border-radius: 22px;
+  padding: 16px;
+}
+
+.contactsCard {
+  grid-column: span 2;
+}
+
+.contactRow {
+  align-items: center;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(120px, 1fr) minmax(180px, 1.2fr) minmax(120px, 0.8fr) 96px 84px;
+}
+
+.contactRow strong,
+.contactRow small {
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.contactRow button,
+.detailsTableRow button,
+.partnerDetailsActions button {
+  border: 0;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.84);
+  min-height: 34px;
+}
+
+.contactRow button,
+.detailsTableRow button {
+  background: rgba(4, 4, 4, 0.62);
+}
+
+.dangerPill,
+.partnerDetailsActions .dangerAction {
+  background: rgba(150, 12, 12, 0.92) !important;
+}
+
+.addInlineButton {
+  align-self: center;
+  background: transparent;
+  border: 0;
+  color: rgba(255, 255, 255, 0.36);
+  font-size: 13px;
+  font-weight: 800;
+  min-height: 34px;
+}
+
+.detailsTableCard {
+  min-height: 400px;
+}
+
+.equipmentTable {
+  display: grid;
+  gap: 12px;
+}
+
+.detailsTableHeader,
+.detailsTableRow {
+  align-items: center;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 0.8fr 0.8fr 1fr 1.2fr 0.9fr 1fr 1fr 1.2fr 1.4fr;
+}
+
+.detailsTableHeader {
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 10px;
+  padding: 0 24px;
+}
+
+.detailsTableRow {
+  font-size: 10px;
+}
+
+.rowActions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.accountsGrid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.accountPanel,
+.accountSettings {
+  min-height: 430px;
+}
+
+.accountPanel.compact {
+  min-height: 220px;
+}
+
+.accountHeader,
+.accountRow {
+  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.accountHeader {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 10px;
+  min-height: 22px;
+}
+
+.accountRow {
+  font-size: 10px;
+}
+
+.accountSettings {
+  align-content: start;
+}
+
+.settingsPair {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.historyPanel {
+  min-height: 400px;
+}
+
+.historyRows {
+  background: rgba(18, 18, 18, 0.34);
+  border-radius: 22px;
+  display: grid;
+  gap: 12px;
+  min-height: 360px;
+  padding: 24px;
+}
+
+.historyRow {
+  align-items: center;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 110px 24px minmax(160px, 1fr) 110px minmax(220px, 1.4fr) 150px;
+}
+
+.historyRow p {
+  margin: 0;
+}
+
+.partnerDetailsActions {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 150px 150px 170px minmax(280px, 360px);
+  justify-content: center;
+  padding-top: 22px;
+}
+
+.partnerDetailsActions button {
+  background: rgba(10, 10, 10, 0.58);
+  font-size: 13px;
+  min-height: 44px;
+}
+
+.partnerDetailsActions .primaryAction {
+  background: rgba(4, 4, 4, 0.82);
 }
 
 .relationStatus,
@@ -846,6 +1178,11 @@ h2 {
 
   .sortControl {
     width: 100%;
+  }
+
+  .panelToolbar {
+    margin-bottom: 8px;
+    position: static;
   }
 
   .sortControl select {

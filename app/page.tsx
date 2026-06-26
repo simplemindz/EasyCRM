@@ -5,6 +5,7 @@ import {
   CalendarDays,
   Check,
   ChevronDown,
+  ChevronRight,
   ChevronUp,
   Handshake,
   Home as HomeIcon,
@@ -24,6 +25,7 @@ type RelationStatus =
 type ActionStatus = "nadchodzące" | "wykonane";
 type PartnerSort = "next" | "name";
 type PanelLayout = "top-collapsed" | "balanced" | "bottom-collapsed";
+type PartnerTab = "general" | "equipment" | "accounts" | "history";
 
 type Partner = {
   id: string;
@@ -69,6 +71,13 @@ const relationStatuses: RelationStatus[] = [
   "w trakcie testowania",
   "czeka na odpowiedź",
   "nieznany"
+];
+
+const partnerTabs: { id: PartnerTab; label: string }[] = [
+  { id: "general", label: "Informacje ogólne" },
+  { id: "equipment", label: "Sprzęt" },
+  { id: "accounts", label: "Konta" },
+  { id: "history", label: "Historia relacji" }
 ];
 
 const emptyPartnerDraft: PartnerDraft = {
@@ -207,6 +216,8 @@ export default function Home() {
     useState<RelationStatus>("nieznany");
   const [partnerSort, setPartnerSort] = useState<PartnerSort>("next");
   const [panelLayout, setPanelLayout] = useState<PanelLayout>("balanced");
+  const [openPartnerId, setOpenPartnerId] = useState("");
+  const [partnerTab, setPartnerTab] = useState<PartnerTab>("general");
   const [deleteTarget, setDeleteTarget] = useState<Partner | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -293,6 +304,10 @@ export default function Home() {
 
   const isActionsCollapsed = panelLayout === "top-collapsed";
   const isPartnersCollapsed = panelLayout === "bottom-collapsed";
+  const openPartner = openPartnerId ? partnerLookup.get(openPartnerId) : null;
+  const openPartnerActions = openPartner
+    ? sortedActions.filter((action) => action.partner_id === openPartner.id)
+    : [];
 
   function openActionModal(partnerId = "") {
     const selectedPartnerId = partnerId || partners[0]?.id || "";
@@ -325,6 +340,17 @@ export default function Home() {
 
       return "top-collapsed";
     });
+  }
+
+  function openPartnerDetails(partnerId: string) {
+    setOpenPartnerId(partnerId);
+    setPartnerTab("general");
+    setPanelLayout("top-collapsed");
+  }
+
+  function closePartnerDetails() {
+    setOpenPartnerId("");
+    setPartnerTab("general");
   }
 
   async function handleAddPartner(event: FormEvent<HTMLFormElement>) {
@@ -468,6 +494,9 @@ export default function Home() {
     setActions((current) =>
       current.filter((action) => action.partner_id !== deleteTarget.id)
     );
+    if (deleteTarget.id === openPartnerId) {
+      closePartnerDetails();
+    }
     setDeleteTarget(null);
   }
 
@@ -565,71 +594,88 @@ export default function Home() {
 
           {!isPartnersCollapsed ? (
             <div className="partnersContent">
-              <div className="panelToolbar">
-                <label className="sortControl">
-                  <span>Sortuj po:</span>
-                  <select
-                    value={partnerSort}
-                    onChange={(event) =>
-                      setPartnerSort(event.target.value as PartnerSort)
-                    }
-                  >
-                    <option value="next">Data następnego kontaktu</option>
-                    <option value="name">Nazwa partnera</option>
-                  </select>
-                  <ChevronDown size={20} aria-hidden="true" />
-                </label>
-              </div>
+              {openPartner ? (
+                <PartnerDetails
+                  actions={openPartnerActions}
+                  activeTab={partnerTab}
+                  onCancel={closePartnerDetails}
+                  onDelete={() => setDeleteTarget(openPartner)}
+                  onSave={closePartnerDetails}
+                  onTabChange={setPartnerTab}
+                  partner={openPartner}
+                  updateActionStatus={updateActionStatus}
+                />
+              ) : (
+                <>
+                  <div className="panelToolbar">
+                    <label className="sortControl">
+                      <span>Sortuj po:</span>
+                      <select
+                        value={partnerSort}
+                        onChange={(event) =>
+                          setPartnerSort(event.target.value as PartnerSort)
+                        }
+                      >
+                        <option value="next">Data następnego kontaktu</option>
+                        <option value="name">Nazwa partnera</option>
+                      </select>
+                      <ChevronDown size={20} aria-hidden="true" />
+                    </label>
+                  </div>
 
-              <div className="partnersHeader" aria-hidden="true">
-                <span />
-                <span>Data ostatniego kontaktu</span>
-                <span>Obecny status</span>
-                <span>Następne działanie</span>
-              </div>
+                  <div className="partnersHeader" aria-hidden="true">
+                    <span />
+                    <span>Data ostatniego kontaktu</span>
+                    <span>Obecny status</span>
+                    <span>Następne działanie</span>
+                  </div>
 
-              <div className="partnerRows">
-                {partnersWithNextActions.map(({ partner, nextAction }) => (
-                  <article className="partnerRow" key={partner.id}>
-                    <strong>{partner.name}</strong>
-                    <time>{formatDate(partner.last_contact_date)}</time>
-                    <RelationStatusSelect
-                      value={partner.relation_status}
-                      onChange={(status) => updatePartnerStatus(partner, status)}
-                    />
-                    <div className="nextAction">
-                      {nextAction ? (
-                        <>
-                          <time>{formatDate(nextAction.action_date)}</time>
-                          <span>{nextAction.description}</span>
-                          <StatusButton
-                            value={nextAction.status}
-                            onChange={(status) =>
-                              updateActionStatus(nextAction, status)
-                            }
-                          />
-                        </>
-                      ) : (
+                  <div className="partnerRows">
+                    {partnersWithNextActions.map(({ partner, nextAction }) => (
+                      <article className="partnerRow" key={partner.id}>
+                        <strong>{partner.name}</strong>
+                        <time>{formatDate(partner.last_contact_date)}</time>
+                        <RelationStatusSelect
+                          value={partner.relation_status}
+                          onChange={(status) =>
+                            updatePartnerStatus(partner, status)
+                          }
+                        />
+                        <div className="nextAction">
+                          {nextAction ? (
+                            <>
+                              <time>{formatDate(nextAction.action_date)}</time>
+                              <span>{nextAction.description}</span>
+                              <StatusButton
+                                value={nextAction.status}
+                                onChange={(status) =>
+                                  updateActionStatus(nextAction, status)
+                                }
+                              />
+                            </>
+                          ) : (
+                            <button
+                              className="ghostAction"
+                              onClick={() => openActionModal(partner.id)}
+                            >
+                              Dodaj działanie
+                            </button>
+                          )}
+                        </div>
                         <button
-                          className="ghostAction"
-                          onClick={() => openActionModal(partner.id)}
+                          className="openPartnerButton"
+                          type="button"
+                          title="Otwórz partnera"
+                          aria-label={`Otwórz partnera ${partner.name}`}
+                          onClick={() => openPartnerDetails(partner.id)}
                         >
-                          Dodaj działanie
+                          <ChevronRight size={22} aria-hidden="true" />
                         </button>
-                      )}
-                    </div>
-                    <button
-                      className="deleteButton"
-                      type="button"
-                      title="Usuń partnera"
-                      aria-label={`Usuń partnera ${partner.name}`}
-                      onClick={() => setDeleteTarget(partner)}
-                    >
-                      <Trash2 size={22} aria-hidden="true" />
-                    </button>
-                  </article>
-                ))}
-              </div>
+                      </article>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           ) : null}
         </section>
@@ -782,6 +828,255 @@ export default function Home() {
         />
       ) : null}
     </main>
+  );
+}
+
+function PartnerDetails({
+  partner,
+  actions,
+  activeTab,
+  onTabChange,
+  onCancel,
+  onDelete,
+  onSave,
+  updateActionStatus
+}: {
+  partner: Partner;
+  actions: PartnerAction[];
+  activeTab: PartnerTab;
+  onTabChange: (tab: PartnerTab) => void;
+  onCancel: () => void;
+  onDelete: () => void;
+  onSave: () => void;
+  updateActionStatus: (action: PartnerAction, status: ActionStatus) => void;
+}) {
+  return (
+    <div className="partnerDetails">
+      <div className="partnerDetailsTop">
+        <h2>{partner.name}</h2>
+        <div className="partnerTabs" role="tablist" aria-label="Sekcje partnera">
+          {partnerTabs.map((tab) => (
+            <button
+              aria-selected={activeTab === tab.id}
+              className={activeTab === tab.id ? "active" : ""}
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              role="tab"
+              type="button"
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="partnerDetailsBody">
+        {activeTab === "general" ? <PartnerGeneralTab partner={partner} /> : null}
+        {activeTab === "equipment" ? <PartnerEquipmentTab /> : null}
+        {activeTab === "accounts" ? <PartnerAccountsTab partner={partner} /> : null}
+        {activeTab === "history" ? (
+          <PartnerHistoryTab
+            actions={actions}
+            partner={partner}
+            updateActionStatus={updateActionStatus}
+          />
+        ) : null}
+      </div>
+
+      <div className="partnerDetailsActions">
+        <button className="dangerAction" type="button" onClick={onDelete}>
+          Usuń
+        </button>
+        <button type="button">Edytuj</button>
+        <button type="button" onClick={onCancel}>
+          Anuluj i wyjdź
+        </button>
+        <button className="primaryAction" type="button" onClick={onSave}>
+          Zapisz i wyjdź
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PartnerGeneralTab({ partner }: { partner: Partner }) {
+  return (
+    <div className="detailsGrid generalGrid">
+      <DetailField label="Typ partnera" />
+      <DetailField label="Data rozpoczęcia współpracy" value={formatDate(partner.relation_start_date)} />
+      <DetailField label="Podpisana umowa współpracy" />
+      <DetailField className="wide" label="E-mail" value={partner.email} />
+      <DetailField label="Telefon" />
+      <DetailField label="Aplikacja" />
+      <DetailField className="wide" label="Nazwa grupy" />
+      <DetailArea label="Notatka" />
+      <section className="detailCard contactsCard">
+        <span>Osoby kontaktowe</span>
+        <div className="contactRow">
+          <strong>{partner.contact_person}</strong>
+          <small>{partner.email}</small>
+          <small>+48 234234234</small>
+          <button type="button">Edytuj</button>
+          <button className="dangerPill" type="button">Usuń</button>
+        </div>
+        <button className="addInlineButton" type="button">
+          + Dodaj osobę kontaktową
+        </button>
+      </section>
+    </div>
+  );
+}
+
+function PartnerEquipmentTab() {
+  const rows = Array.from({ length: 3 });
+
+  return (
+    <section className="detailsTableCard">
+      <span>Ewidencja sprzętu</span>
+      <div className="equipmentTable">
+        <div className="detailsTableHeader">
+          <span>Nr wewnętrzny</span>
+          <span>Typ</span>
+          <span>Model</span>
+          <span>Nr seryjny</span>
+          <span>Wypożyczenie</span>
+          <span>Data użyczenia</span>
+          <span>Data zwrotu</span>
+          <span>Opiekun</span>
+          <span />
+        </div>
+        {rows.map((_, index) => (
+          <div className="detailsTableRow" key={index}>
+            <span>334</span>
+            <span>Tablet</span>
+            <span>RedmiPad 2</span>
+            <span>234234234234</span>
+            <span>Tak</span>
+            <span>31.07.2026</span>
+            <span>31.07.2026</span>
+            <span>Mariusz Włazły</span>
+            <span className="rowActions">
+              <button type="button">Edytuj</button>
+              <button className="dangerPill" type="button">Usuń</button>
+            </span>
+          </div>
+        ))}
+      </div>
+      <button className="addInlineButton" type="button">
+        + Dodaj urządzenie
+      </button>
+    </section>
+  );
+}
+
+function PartnerAccountsTab({ partner }: { partner: Partner }) {
+  return (
+    <div className="accountsGrid">
+      <AccountPanel title="Konta RevoCure VR" />
+      <section className="accountSettings">
+        <DetailField label="Organizacja Meta For Work" value={partner.name} />
+        <div className="settingsPair">
+          <DetailField label="Tryb współdzielony / Kiosk Mode" value="Tak" />
+          <DetailField label="Podpięcie pod admina" value="Tak" />
+        </div>
+        <AccountPanel compact title="Użytkownicy Meta For Work" />
+      </section>
+      <AccountPanel title="Konta RevoCure Assistance" />
+      <section className="accountSettings">
+        <DetailField label="Konto Google organizacji" value={partner.email || "Wisla@gmail.com"} />
+        <DetailField label="E-mail organizacji" value={partner.email || "Wisla@gmail.com"} />
+      </section>
+    </div>
+  );
+}
+
+function AccountPanel({
+  title,
+  compact = false
+}: {
+  title: string;
+  compact?: boolean;
+}) {
+  return (
+    <section className={`accountPanel ${compact ? "compact" : ""}`}>
+      <span>{title}</span>
+      <div className="accountHeader">
+        <span>ID</span>
+        <span>Login</span>
+        <span>Hasło</span>
+      </div>
+      <div className="accountRow">
+        <span>2342342344</span>
+        <span>MarWłaz</span>
+        <span>************</span>
+      </div>
+      <button className="addInlineButton" type="button">
+        + Dodaj konto
+      </button>
+    </section>
+  );
+}
+
+function PartnerHistoryTab({
+  partner,
+  actions,
+  updateActionStatus
+}: {
+  partner: Partner;
+  actions: PartnerAction[];
+  updateActionStatus: (action: PartnerAction, status: ActionStatus) => void;
+}) {
+  return (
+    <section className="historyPanel">
+      <span>Historia relacji</span>
+      <div className="historyRows">
+        {actions.length === 0 ? (
+          <p className="emptyState">Brak historii relacji dla tego partnera.</p>
+        ) : null}
+        {actions.map((action) => (
+          <article className="historyRow" key={action.id}>
+            <time>{formatDate(partner.last_contact_date)}</time>
+            <span
+              className={`statusDot ${getStatusTone(partner.relation_status)}`}
+              aria-hidden="true"
+            />
+            <span>{partner.relation_status}</span>
+            <time>{formatDate(action.action_date)}</time>
+            <p>{action.description}</p>
+            <StatusButton
+              value={action.status}
+              onChange={(status) => updateActionStatus(action, status)}
+            />
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function DetailField({
+  label,
+  value = "",
+  className = ""
+}: {
+  label: string;
+  value?: string;
+  className?: string;
+}) {
+  return (
+    <label className={`detailField ${className}`}>
+      <span>{label}</span>
+      <input readOnly value={value} />
+    </label>
+  );
+}
+
+function DetailArea({ label }: { label: string }) {
+  return (
+    <label className="detailArea">
+      <span>{label}</span>
+      <textarea readOnly />
+    </label>
   );
 }
 
