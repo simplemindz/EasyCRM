@@ -5,6 +5,7 @@ import {
   CalendarDays,
   Check,
   ChevronDown,
+  ChevronUp,
   Handshake,
   Home as HomeIcon,
   Plus,
@@ -22,6 +23,7 @@ type RelationStatus =
 
 type ActionStatus = "nadchodzące" | "wykonane";
 type PartnerSort = "next" | "name";
+type PanelLayout = "top-collapsed" | "balanced" | "bottom-collapsed";
 
 type Partner = {
   id: string;
@@ -204,6 +206,7 @@ export default function Home() {
   const [actionRelationStatus, setActionRelationStatus] =
     useState<RelationStatus>("nieznany");
   const [partnerSort, setPartnerSort] = useState<PartnerSort>("next");
+  const [panelLayout, setPanelLayout] = useState<PanelLayout>("balanced");
   const [deleteTarget, setDeleteTarget] = useState<Partner | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -288,6 +291,9 @@ export default function Home() {
       );
     });
 
+  const isActionsCollapsed = panelLayout === "top-collapsed";
+  const isPartnersCollapsed = panelLayout === "bottom-collapsed";
+
   function openActionModal(partnerId = "") {
     const selectedPartnerId = partnerId || partners[0]?.id || "";
 
@@ -299,6 +305,26 @@ export default function Home() {
       partnerLookup.get(selectedPartnerId)?.relation_status ?? "nieznany"
     );
     setModal("action");
+  }
+
+  function expandActionsPanel() {
+    setPanelLayout((current) => {
+      if (current === "top-collapsed") {
+        return "balanced";
+      }
+
+      return "bottom-collapsed";
+    });
+  }
+
+  function expandPartnersPanel() {
+    setPanelLayout((current) => {
+      if (current === "bottom-collapsed") {
+        return "balanced";
+      }
+
+      return "top-collapsed";
+    });
   }
 
   async function handleAddPartner(event: FormEvent<HTMLFormElement>) {
@@ -471,7 +497,7 @@ export default function Home() {
         </div>
       </aside>
 
-      <section className="relationsView">
+      <section className={`relationsView layout-${panelLayout}`}>
         {errorMessage ? (
           <div className="notice">
             <span>{errorMessage}</span>
@@ -481,10 +507,18 @@ export default function Home() {
           </div>
         ) : null}
 
-        <div className="topGrid">
-          <section className="glassPanel actionsPanel">
-            <h1>Działania</h1>
-            <div className="actionsList">
+        <section className="glassPanel actionsPanel">
+          <PanelControls
+            title="Najbliższe działania"
+            upDisabled={panelLayout === "top-collapsed"}
+            downDisabled={panelLayout === "bottom-collapsed"}
+            onUp={expandPartnersPanel}
+            onDown={expandActionsPanel}
+          />
+
+          {!isActionsCollapsed ? (
+            <div className="actionsContent">
+              <div className="actionsList">
               {isLoading ? (
                 <p className="emptyState">Ładowanie danych...</p>
               ) : null}
@@ -493,7 +527,7 @@ export default function Home() {
                 <p className="emptyState">Brak zaplanowanych działań.</p>
               ) : null}
 
-              {upcomingActions.slice(0, 4).map((action) => {
+              {upcomingActions.slice(0, 7).map((action) => {
                 const partner = partnerLookup.get(action.partner_id);
 
                 return (
@@ -501,7 +535,6 @@ export default function Home() {
                     <time>{formatDate(action.action_date)}</time>
                     <div className="actionBody">
                       <strong>{partner?.name ?? "Nieznany partner"}</strong>
-                      <span>Partner</span>
                       <p>{action.description}</p>
                       <StatusButton
                         value={action.status}
@@ -511,88 +544,94 @@ export default function Home() {
                   </article>
                 );
               })}
-            </div>
-          </section>
+              </div>
 
-          <div className="quickActions">
-            <button className="quickButton" onClick={() => openActionModal()}>
-              <Plus size={22} aria-hidden="true" />
-              Dodaj działanie
-            </button>
-            <button className="quickButton" onClick={() => setModal("partner")}>
-              <Plus size={22} aria-hidden="true" />
-              Dodaj partnera
-            </button>
-          </div>
-        </div>
+              <button className="quickButton" onClick={() => openActionModal()}>
+                <Plus size={22} aria-hidden="true" />
+                Dodaj działanie
+              </button>
+            </div>
+          ) : null}
+        </section>
 
         <section className="glassPanel partnersPanel">
-          <div className="panelHeader">
-            <h2>Partnerzy</h2>
-            <label className="sortControl">
-              <span>Sortuj po:</span>
-              <select
-                value={partnerSort}
-                onChange={(event) =>
-                  setPartnerSort(event.target.value as PartnerSort)
-                }
-              >
-                <option value="next">Data następnego kontaktu</option>
-                <option value="name">Nazwa partnera</option>
-              </select>
-              <ChevronDown size={20} aria-hidden="true" />
-            </label>
-          </div>
+          <PanelControls
+            title="Partnerzy"
+            upDisabled={panelLayout === "top-collapsed"}
+            downDisabled={panelLayout === "bottom-collapsed"}
+            onUp={expandPartnersPanel}
+            onDown={expandActionsPanel}
+          />
 
-          <div className="partnersHeader" aria-hidden="true">
-            <span />
-            <span>Data ostatniego kontaktu</span>
-            <span>Status kontaktu</span>
-            <span>Następne działanie</span>
-          </div>
+          {!isPartnersCollapsed ? (
+            <div className="partnersContent">
+              <div className="panelToolbar">
+                <label className="sortControl">
+                  <span>Sortuj po:</span>
+                  <select
+                    value={partnerSort}
+                    onChange={(event) =>
+                      setPartnerSort(event.target.value as PartnerSort)
+                    }
+                  >
+                    <option value="next">Data następnego kontaktu</option>
+                    <option value="name">Nazwa partnera</option>
+                  </select>
+                  <ChevronDown size={20} aria-hidden="true" />
+                </label>
+              </div>
 
-          <div className="partnerRows">
-            {partnersWithNextActions.map(({ partner, nextAction }) => (
-              <article className="partnerRow" key={partner.id}>
-                <strong>{partner.name}</strong>
-                <time>{formatDate(partner.last_contact_date)}</time>
-                <RelationStatusSelect
-                  value={partner.relation_status}
-                  onChange={(status) => updatePartnerStatus(partner, status)}
-                />
-                <div className="nextAction">
-                  {nextAction ? (
-                    <>
-                      <time>{formatDate(nextAction.action_date)}</time>
-                      <span>{nextAction.description}</span>
-                      <StatusButton
-                        value={nextAction.status}
-                        onChange={(status) =>
-                          updateActionStatus(nextAction, status)
-                        }
-                      />
-                    </>
-                  ) : (
+              <div className="partnersHeader" aria-hidden="true">
+                <span />
+                <span>Data ostatniego kontaktu</span>
+                <span>Obecny status</span>
+                <span>Następne działanie</span>
+              </div>
+
+              <div className="partnerRows">
+                {partnersWithNextActions.map(({ partner, nextAction }) => (
+                  <article className="partnerRow" key={partner.id}>
+                    <strong>{partner.name}</strong>
+                    <time>{formatDate(partner.last_contact_date)}</time>
+                    <RelationStatusSelect
+                      value={partner.relation_status}
+                      onChange={(status) => updatePartnerStatus(partner, status)}
+                    />
+                    <div className="nextAction">
+                      {nextAction ? (
+                        <>
+                          <time>{formatDate(nextAction.action_date)}</time>
+                          <span>{nextAction.description}</span>
+                          <StatusButton
+                            value={nextAction.status}
+                            onChange={(status) =>
+                              updateActionStatus(nextAction, status)
+                            }
+                          />
+                        </>
+                      ) : (
+                        <button
+                          className="ghostAction"
+                          onClick={() => openActionModal(partner.id)}
+                        >
+                          Dodaj działanie
+                        </button>
+                      )}
+                    </div>
                     <button
-                      className="ghostAction"
-                      onClick={() => openActionModal(partner.id)}
+                      className="deleteButton"
+                      type="button"
+                      title="Usuń partnera"
+                      aria-label={`Usuń partnera ${partner.name}`}
+                      onClick={() => setDeleteTarget(partner)}
                     >
-                      Dodaj działanie
+                      <Trash2 size={22} aria-hidden="true" />
                     </button>
-                  )}
-                </div>
-                <button
-                  className="deleteButton"
-                  type="button"
-                  title="Usuń partnera"
-                  aria-label={`Usuń partnera ${partner.name}`}
-                  onClick={() => setDeleteTarget(partner)}
-                >
-                  <Trash2 size={22} aria-hidden="true" />
-                </button>
-              </article>
-            ))}
-          </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </section>
       </section>
 
@@ -743,6 +782,44 @@ export default function Home() {
         />
       ) : null}
     </main>
+  );
+}
+
+function PanelControls({
+  title,
+  upDisabled,
+  downDisabled,
+  onUp,
+  onDown
+}: {
+  title: string;
+  upDisabled: boolean;
+  downDisabled: boolean;
+  onUp: () => void;
+  onDown: () => void;
+}) {
+  return (
+    <div className="panelHeader">
+      <h1>{title}</h1>
+      <div className="panelArrows">
+        <button
+          type="button"
+          aria-label={`Powiększ panel ${title}`}
+          disabled={upDisabled}
+          onClick={onUp}
+        >
+          <ChevronUp size={18} aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          aria-label={`Zmniejsz panel ${title}`}
+          disabled={downDisabled}
+          onClick={onDown}
+        >
+          <ChevronDown size={18} aria-hidden="true" />
+        </button>
+      </div>
+    </div>
   );
 }
 

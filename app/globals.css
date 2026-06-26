@@ -133,23 +133,23 @@ button {
 .relationsView {
   display: grid;
   gap: 18px;
-  grid-template-rows: minmax(205px, 30dvh) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   height: 100dvh;
   min-height: 0;
   overflow: hidden;
   padding: 64px 46px 56px 28px;
+  transition: grid-template-rows 180ms ease;
 }
 
-.topGrid {
-  display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 1fr) 455px;
-  height: 100%;
-  min-height: 0;
+.relationsView.layout-top-collapsed {
+  grid-template-rows: 76px minmax(0, 1fr);
+}
+
+.relationsView.layout-bottom-collapsed {
+  grid-template-rows: minmax(0, 1fr) 76px;
 }
 
 .glassPanel,
-.quickButton,
 .modalPanel {
   backdrop-filter: blur(24px) saturate(125%);
   background: var(--panel);
@@ -162,9 +162,11 @@ button {
 }
 
 .actionsPanel {
+  display: flex;
+  flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  padding: 20px 30px 22px;
+  padding: 20px 26px 24px;
 }
 
 h1,
@@ -182,23 +184,34 @@ h2 {
   font-size: 20px;
 }
 
-.actionsList {
+.actionsContent {
   display: grid;
-  gap: 10px;
-  margin-top: 24px;
+  flex: 1;
+  gap: 34px;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  min-height: 0;
+  padding-top: 26px;
+}
+
+.actionsList {
+  align-content: start;
+  display: grid;
+  gap: 12px;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .actionRow {
   align-items: center;
   display: grid;
-  gap: 18px;
+  gap: 20px;
   grid-template-columns: 96px minmax(0, 1fr);
 }
 
 .actionRow > time,
 .partnerRow > time {
   color: rgba(255, 255, 255, 0.76);
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .actionBody {
@@ -206,15 +219,15 @@ h2 {
   background: rgba(5, 5, 5, 0.86);
   border-radius: 999px;
   display: grid;
-  gap: 14px;
-  grid-template-columns: 112px 68px minmax(150px, 1fr) 160px;
-  min-height: 40px;
+  gap: 22px;
+  grid-template-columns: 130px minmax(150px, 1fr) 150px;
+  min-height: 36px;
   padding: 5px 10px 5px 24px;
 }
 
 .actionBody strong,
 .partnerRow strong {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .actionBody span,
@@ -230,27 +243,20 @@ h2 {
   white-space: nowrap;
 }
 
-.quickActions {
-  display: grid;
-  gap: 18px;
-  grid-template-rows: 1fr 1fr;
-  min-height: 0;
-}
-
 .quickButton {
   align-items: center;
-  border-radius: var(--radius-large);
+  background: rgba(255, 255, 255, 0.13);
+  border: 0;
+  border-radius: 22px;
   color: rgba(255, 255, 255, 0.42);
   display: flex;
   font-size: 20px;
   font-weight: 800;
   gap: 8px;
   justify-content: center;
-  min-height: 0;
-}
-
-.quickButton:first-child {
-  min-height: 0;
+  min-height: clamp(128px, 22dvh, 210px);
+  align-self: start;
+  width: 100%;
 }
 
 .quickButton:hover {
@@ -263,14 +269,57 @@ h2 {
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  padding: 24px 18px 24px;
+  padding: 20px 18px 24px;
 }
 
 .panelHeader {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  padding: 0 10px 20px 20px;
+  min-height: 32px;
+  padding: 0 16px 0 20px;
+}
+
+.panelArrows {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.panelArrows button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: #ffffff;
+  display: flex;
+  height: 24px;
+  justify-content: center;
+  padding: 0;
+  width: 24px;
+}
+
+.panelArrows button:disabled {
+  color: rgba(255, 255, 255, 0.32);
+  cursor: default;
+}
+
+.partnersContent {
+  background: rgba(20, 20, 20, 0.42);
+  border-radius: 24px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin-top: 28px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 18px 18px 22px;
+}
+
+.panelToolbar {
+  display: flex;
+  justify-content: flex-end;
+  min-height: 44px;
+  padding: 0 8px 8px;
 }
 
 .sortControl {
@@ -317,22 +366,22 @@ h2 {
 .partnersHeader,
 .partnerRow {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(0, 0.74fr) minmax(0, 1.45fr) minmax(0, 2.75fr) 36px;
+  grid-template-columns: minmax(180px, 0.85fr) minmax(86px, 0.36fr) minmax(250px, 1.1fr) minmax(520px, 2.55fr) 32px;
 }
 
 .partnersHeader {
   color: rgba(255, 255, 255, 0.56);
-  font-size: 9px;
+  font-size: 8.5px;
   margin: 0 0 9px;
-  padding: 0 44px;
+  padding: 0 36px 0 32px;
 }
 
 .partnerRows {
   align-content: start;
   display: grid;
   flex: 1;
-  gap: 14px;
-  grid-auto-rows: 78px;
+  gap: 10px;
+  grid-auto-rows: 64px;
   min-height: 0;
   overflow-y: auto;
   padding-right: 8px;
@@ -357,10 +406,10 @@ h2 {
 .partnerRow {
   align-items: center;
   background: var(--row);
-  border-radius: var(--radius);
-  height: 78px;
+  border-radius: 20px;
+  height: 64px;
   min-height: 0;
-  padding: 0 24px 0 44px;
+  padding: 0 18px 0 32px;
 }
 
 .relationStatus,
@@ -371,16 +420,16 @@ h2 {
   background: rgba(6, 6, 6, 0.88);
   border-radius: 999px;
   display: flex;
-  height: 46px;
+  height: 40px;
   min-height: 0;
 }
 
 .relationStatus {
   color: rgba(255, 255, 255, 0.74);
-  font-size: 10px;
-  gap: 12px;
+  font-size: 9px;
+  gap: 10px;
   justify-content: space-between;
-  padding: 0 14px 0 14px;
+  padding: 0 12px;
   position: relative;
 }
 
@@ -390,7 +439,7 @@ h2 {
   border: 0;
   color: rgba(255, 255, 255, 0.74);
   flex: 1;
-  font-size: 10px;
+  font-size: 9px;
   min-width: 0;
   outline: 0;
   padding: 0 24px 0 0;
@@ -405,8 +454,8 @@ h2 {
   border-radius: 50%;
   display: inline-block;
   flex: 0 0 auto;
-  height: 28px;
-  width: 28px;
+  height: 22px;
+  width: 22px;
 }
 
 .statusDot.yellow {
@@ -426,14 +475,14 @@ h2 {
 }
 
 .nextAction {
-  gap: 12px;
-  padding: 0 10px 0 24px;
+  gap: 16px;
+  padding: 0 10px 0 28px;
 }
 
 .nextAction time,
 .nextAction span {
   color: rgba(255, 255, 255, 0.76);
-  font-size: 10px;
+  font-size: 9px;
 }
 
 .nextAction span {
@@ -452,8 +501,8 @@ h2 {
 }
 
 .statusSelect {
-  flex: 0 0 150px;
-  min-height: 30px;
+  flex: 0 0 134px;
+  min-height: 28px;
   overflow: hidden;
 }
 
@@ -464,7 +513,7 @@ h2 {
 
 .statusSelect select {
   font-size: 9px;
-  min-height: 30px;
+  min-height: 28px;
   padding-left: 10px;
   width: 100%;
 }
@@ -476,10 +525,10 @@ h2 {
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.82);
   display: flex;
-  height: 32px;
+  height: 30px;
   justify-content: center;
   padding: 0;
-  width: 32px;
+  width: 30px;
 }
 
 .deleteButton:hover {
@@ -705,18 +754,12 @@ h2 {
     margin-bottom: 72px;
   }
 
-  .topGrid {
+  .actionsContent {
     grid-template-columns: 1fr;
-    height: auto;
   }
 
-  .quickActions {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .quickButton,
-  .quickButton:first-child {
-    min-height: 92px;
+  .quickButton {
+    min-height: 120px;
   }
 
   .partnersPanel {
@@ -762,14 +805,21 @@ h2 {
   }
 
   .relationsView {
-    grid-template-rows: auto minmax(420px, 1fr);
+    display: flex;
+    flex-direction: column;
     height: auto;
     overflow: visible;
     padding: 18px;
   }
 
-  .quickActions {
-    grid-template-columns: 1fr;
+  .relationsView.layout-top-collapsed,
+  .relationsView.layout-bottom-collapsed {
+    display: flex;
+  }
+
+  .actionsPanel,
+  .partnersPanel {
+    min-height: 76px;
   }
 
   .actionRow {
@@ -784,9 +834,7 @@ h2 {
   }
 
   .panelHeader {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 16px;
+    padding-inline: 4px;
   }
 
   .sortControl {
