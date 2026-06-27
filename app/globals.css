@@ -926,6 +926,179 @@ h2 {
   text-align: center;
 }
 
+.partnerEditorPanel {
+  max-width: 1840px;
+  min-height: min(92dvh, 980px);
+  padding: 28px 32px 34px;
+}
+
+.partnerEditorForm {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(min(92dvh, 980px) - 62px);
+}
+
+.partnerEditorHeader {
+  align-items: center;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(260px, 0.7fr) minmax(520px, 0.9fr) minmax(0, 0.7fr);
+}
+
+.partnerEditorHeader h2 {
+  font-size: 20px;
+  font-weight: 400;
+  margin: 0;
+  text-align: left;
+}
+
+.editorTabs {
+  min-height: 42px;
+}
+
+.partnerEditorBody {
+  flex: 1;
+  min-height: 0;
+  padding: 36px 0 28px;
+}
+
+.editorGeneralGrid {
+  display: grid;
+  gap: 22px 20px;
+  grid-template-columns: 1.1fr 1.25fr 1.12fr 0.55fr;
+}
+
+.editorField,
+.editorArea,
+.editorContacts {
+  color: rgba(255, 255, 255, 0.7);
+  display: grid;
+  gap: 10px;
+}
+
+.editorField span,
+.editorArea span,
+.editorContacts > span,
+.editorEmptyList > span,
+.editorAccountPanel span {
+  font-size: 10px;
+}
+
+.editorField input,
+.editorField select,
+.editorArea textarea,
+.editorContactRow input,
+.editorAccountPanel input,
+.editorAccountRow input {
+  appearance: none;
+  background: rgba(18, 18, 18, 0.58);
+  border: 0;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.86);
+  min-height: 42px;
+  outline: 0;
+  padding: 0 22px;
+  width: 100%;
+}
+
+.editorSelect {
+  position: relative;
+}
+
+.editorSelect svg {
+  pointer-events: none;
+  position: absolute;
+  right: 18px;
+  top: 37px;
+}
+
+.editorArea {
+  grid-column: span 2;
+}
+
+.editorArea textarea {
+  border-radius: 20px;
+  min-height: 300px;
+  padding: 18px 22px;
+  resize: none;
+}
+
+.editorContacts {
+  background: rgba(18, 18, 18, 0.34);
+  border-radius: 20px;
+  grid-column: span 2;
+  min-height: 300px;
+  padding: 18px;
+}
+
+.editorContactRow,
+.editorAccountRow {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.editorEmptyList {
+  background: rgba(18, 18, 18, 0.34);
+  border-radius: 22px;
+  display: grid;
+  min-height: 620px;
+  padding: 18px;
+  place-items: center;
+}
+
+.editorEmptyList > span {
+  justify-self: start;
+  place-self: start;
+}
+
+.editorAccountsGrid {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  min-height: 620px;
+}
+
+.editorAccountPanel {
+  align-content: start;
+  background: rgba(18, 18, 18, 0.34);
+  border-radius: 22px;
+  display: grid;
+  gap: 14px;
+  min-height: 620px;
+  padding: 18px;
+}
+
+.editorAddPanel {
+  align-self: start;
+  background: transparent;
+  border: 0;
+  color: rgba(255, 255, 255, 0.34);
+  font-size: 13px;
+  font-weight: 800;
+  min-height: 160px;
+}
+
+.partnerEditorActions {
+  display: grid;
+  gap: 120px;
+  grid-template-columns: 380px 170px 380px 380px;
+  justify-content: space-between;
+}
+
+.partnerEditorActions button {
+  background: rgba(4, 4, 4, 0.78);
+  border: 0;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.82);
+  min-height: 46px;
+}
+
+.partnerEditorActions button:disabled {
+  color: rgba(255, 255, 255, 0.22);
+  cursor: default;
+}
+
 .modalForm {
   display: grid;
   gap: 38px 26px;
