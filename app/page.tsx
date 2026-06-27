@@ -985,6 +985,34 @@ export default function Home() {
     );
   }
 
+  function updatePartnerAccountItem(
+    partnerId: string,
+    listId: string,
+    itemId: string,
+    field: keyof Pick<PartnerAccountItem, "account_number" | "login" | "password">,
+    value: string
+  ) {
+    if (supabase) {
+      void supabase
+        .from("partner_account_items")
+        .update({ [field]: value })
+        .eq("id", itemId);
+    }
+
+    updatePartnerAccountLists(partnerId, (lists) =>
+      lists.map((list) =>
+        list.id === listId
+          ? {
+              ...list,
+              items: list.items.map((item) =>
+                item.id === itemId ? { ...item, [field]: value } : item
+              )
+            }
+          : list
+      )
+    );
+  }
+
   async function confirmDeletePartner() {
     if (!deleteTarget) {
       return;
@@ -1119,6 +1147,7 @@ export default function Home() {
                   onTabChange={setPartnerTab}
                   onAddAccountItem={addPartnerAccountItem}
                   onRemoveAccountItem={removePartnerAccountItem}
+                  onUpdateAccountItem={updatePartnerAccountItem}
                   partner={openPartner}
                   updateActionStatus={updateActionStatus}
                 />
@@ -1618,6 +1647,7 @@ function PartnerDetails({
   onSave,
   onAddAccountItem,
   onRemoveAccountItem,
+  onUpdateAccountItem,
   updateActionStatus
 }: {
   partner: Partner;
@@ -1630,6 +1660,13 @@ function PartnerDetails({
   onSave: () => void;
   onAddAccountItem: (partnerId: string, listId: string) => void;
   onRemoveAccountItem: (partnerId: string, listId: string, itemId: string) => void;
+  onUpdateAccountItem: (
+    partnerId: string,
+    listId: string,
+    itemId: string,
+    field: keyof Pick<PartnerAccountItem, "account_number" | "login" | "password">,
+    value: string
+  ) => void;
   updateActionStatus: (action: PartnerAction, status: ActionStatus) => void;
 }) {
   return (
@@ -1659,6 +1696,7 @@ function PartnerDetails({
           <PartnerAccountsTab
             onAddAccountItem={onAddAccountItem}
             onRemoveAccountItem={onRemoveAccountItem}
+            onUpdateAccountItem={onUpdateAccountItem}
             partner={partner}
           />
         ) : null}
@@ -1697,7 +1735,6 @@ function PartnerGeneralTab({ partner }: { partner: Partner }) {
       <DetailField label="Telefon" value={partner.phone} />
       <DetailField label="Grupa komunikacyjna" value={capitalize(partner.communication_group)} />
       <DetailField className="wide" label="Nazwa grupy" value={partner.group_name} />
-      <DetailField label="Aplikacja" value={partner.application} />
       <DetailArea label="Notatka" value={partner.note} />
       <section className="detailCard contactsCard">
         <span>Osoby kontaktowe</span>
@@ -1763,11 +1800,19 @@ function PartnerEquipmentTab() {
 function PartnerAccountsTab({
   partner,
   onAddAccountItem,
-  onRemoveAccountItem
+  onRemoveAccountItem,
+  onUpdateAccountItem
 }: {
   partner: Partner;
   onAddAccountItem: (partnerId: string, listId: string) => void;
   onRemoveAccountItem: (partnerId: string, listId: string, itemId: string) => void;
+  onUpdateAccountItem: (
+    partnerId: string,
+    listId: string,
+    itemId: string,
+    field: keyof Pick<PartnerAccountItem, "account_number" | "login" | "password">,
+    value: string
+  ) => void;
 }) {
   return (
     <div className="accountsGrid">
@@ -1783,6 +1828,9 @@ function PartnerAccountsTab({
           list={list}
           onAdd={() => onAddAccountItem(partner.id, list.id)}
           onRemove={(itemId) => onRemoveAccountItem(partner.id, list.id, itemId)}
+          onUpdate={(itemId, field, value) =>
+            onUpdateAccountItem(partner.id, list.id, itemId, field, value)
+          }
         />
       ))}
       <section className="accountSettings">
@@ -1800,11 +1848,17 @@ function PartnerAccountsTab({
 function AccountPanel({
   list,
   onAdd,
-  onRemove
+  onRemove,
+  onUpdate
 }: {
   list: PartnerAccountList;
   onAdd: () => void;
   onRemove: (itemId: string) => void;
+  onUpdate: (
+    itemId: string,
+    field: keyof Pick<PartnerAccountItem, "account_number" | "login" | "password">,
+    value: string
+  ) => void;
 }) {
   return (
     <section className="accountPanel">
@@ -1817,10 +1871,27 @@ function AccountPanel({
       </div>
       {list.items.map((item) => (
         <div className="accountRow" key={item.id}>
-          <span>{item.account_number || "Numer"}</span>
-          <span>{item.login || "Login"}</span>
-          <span>{item.password || "Hasło"}</span>
-          <button className="dangerPill" type="button" onClick={() => onRemove(item.id)}>
+          <input
+            aria-label="Numer konta"
+            placeholder="Numer"
+            value={item.account_number}
+            onChange={(event) =>
+              onUpdate(item.id, "account_number", event.target.value)
+            }
+          />
+          <input
+            aria-label="Login konta"
+            placeholder="Login"
+            value={item.login}
+            onChange={(event) => onUpdate(item.id, "login", event.target.value)}
+          />
+          <input
+            aria-label="Hasło konta"
+            placeholder="Hasło"
+            value={item.password}
+            onChange={(event) => onUpdate(item.id, "password", event.target.value)}
+          />
+          <button className="accountDeleteButton" type="button" onClick={() => onRemove(item.id)}>
             Usuń
           </button>
         </div>
