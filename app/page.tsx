@@ -48,6 +48,9 @@ type Partner = {
   relation_start_date: string;
   last_contact_date: string;
   relation_status: RelationStatus;
+  contacts: PartnerContact[];
+  accountLists: PartnerAccountList[];
+  accountFields: PartnerAccountField[];
   created_at?: string;
 };
 
@@ -200,7 +203,17 @@ const demoPartners: Partner[] = [
     note: "",
     relation_start_date: "2026-02-14",
     last_contact_date: "2026-04-25",
-    relation_status: "w oczekiwaniu na odpowiedź"
+    relation_status: "w oczekiwaniu na odpowiedź",
+    contacts: [
+      {
+        id: "demo-contact-1",
+        name: "Anna Krawiec",
+        email: "partnerzy@trefl.example",
+        phone: "+48 234 234 234"
+      }
+    ],
+    accountLists: [],
+    accountFields: []
   },
   {
     id: "demo-partner-2",
@@ -218,7 +231,36 @@ const demoPartners: Partner[] = [
     note: "",
     relation_start_date: "2026-03-08",
     last_contact_date: "2026-04-25",
-    relation_status: "w trakcie testowania"
+    relation_status: "w trakcie testowania",
+    contacts: [
+      {
+        id: "demo-contact-2",
+        name: "Michał Lis",
+        email: "kontakt@wisla.example",
+        phone: "+48 234 234 234"
+      }
+    ],
+    accountLists: [
+      {
+        id: "demo-account-list-1",
+        name: "Konta RevoCure VR",
+        items: [
+          {
+            id: "demo-account-item-1",
+            account_number: "2342342344",
+            login: "MarWłaz",
+            password: "************"
+          }
+        ]
+      }
+    ],
+    accountFields: [
+      {
+        id: "demo-account-field-1",
+        name: "Konto Google organizacji",
+        value: "Wisla@gmail.com"
+      }
+    ]
   },
   {
     id: "demo-partner-3",
@@ -236,7 +278,17 @@ const demoPartners: Partner[] = [
     note: "",
     relation_start_date: "2026-01-20",
     last_contact_date: "2026-04-25",
-    relation_status: "czeka na odpowiedź"
+    relation_status: "czeka na odpowiedź",
+    contacts: [
+      {
+        id: "demo-contact-3",
+        name: "Marcin Szewczyk",
+        email: "marcin@example.com",
+        phone: "+48 234 234 234"
+      }
+    ],
+    accountLists: [],
+    accountFields: []
   }
 ];
 
@@ -315,11 +367,25 @@ function createPartner(draft: PartnerDraft): Partner {
     relation_start_date: draft.relation_start_date,
     id: crypto.randomUUID(),
     last_contact_date: draft.relation_start_date,
-    relation_status: "nieznany"
+    relation_status: "nieznany",
+    contacts: draft.contacts,
+    accountLists: draft.accountLists,
+    accountFields: draft.accountFields
   };
 }
 
 function normalizePartner(partner: Partner): Partner {
+  const contacts = partner.contacts?.length
+    ? partner.contacts
+    : [
+        {
+          id: crypto.randomUUID(),
+          name: partner.contact_person ?? "",
+          email: partner.email ?? "",
+          phone: partner.phone ?? ""
+        }
+      ];
+
   return {
     ...partner,
     legal_name: partner.legal_name ?? partner.name,
@@ -329,7 +395,10 @@ function normalizePartner(partner: Partner): Partner {
     communication_group: partner.communication_group ?? "inna",
     group_name: partner.group_name ?? "",
     application: partner.application ?? "",
-    note: partner.note ?? ""
+    note: partner.note ?? "",
+    contacts,
+    accountLists: partner.accountLists ?? [],
+    accountFields: partner.accountFields ?? []
   };
 }
 
@@ -350,16 +419,9 @@ function createDraftFromPartner(partner: Partner): PartnerDraft {
     group_name: normalized.group_name,
     application: normalized.application,
     note: normalized.note,
-    contacts: [
-      {
-        id: crypto.randomUUID(),
-        name: normalized.contact_person,
-        email: normalized.email,
-        phone: normalized.phone
-      }
-    ],
-    accountLists: [],
-    accountFields: []
+    contacts: normalized.contacts,
+    accountLists: normalized.accountLists,
+    accountFields: normalized.accountFields
   };
 }
 
@@ -377,6 +439,36 @@ function createEmptyAccountField(): PartnerAccountField {
     name: "Nazwa typu konta",
     value: ""
   };
+}
+
+function mergePartnerDetails(
+  partners: Partner[],
+  contacts: PartnerContact[],
+  accountLists: PartnerAccountList[],
+  accountFields: PartnerAccountField[]
+) {
+  return partners.map((partner) =>
+    normalizePartner({
+      ...partner,
+      contacts: contacts.filter((contact) => contact.partner_id === partner.id),
+      accountLists: accountLists.filter((list) => list.partner_id === partner.id),
+      accountFields: accountFields.filter((field) => field.partner_id === partner.id)
+    })
+  );
+}
+
+function mapAccountListsWithItems(
+  lists: Array<PartnerAccountList & { sort_order?: number }>,
+  items: Array<PartnerAccountItem & { sort_order?: number }>
+) {
+  return lists
+    .map((list) => ({
+      ...list,
+      items: items
+        .filter((item) => item.list_id === list.id)
+        .sort((first, second) => (first.sort_order ?? 0) - (second.sort_order ?? 0))
+    }))
+    .sort((first, second) => (first.sort_order ?? 0) - (second.sort_order ?? 0));
 }
 
 function createAction(draft: ActionDraft): PartnerAction {
@@ -417,9 +509,20 @@ export default function Home() {
       }
 
       if (supabase) {
-        const [partnersResult, actionsResult] = await Promise.all([
+        const [
+          partnersResult,
+          actionsResult,
+          contactsResult,
+          accountListsResult,
+          accountItemsResult,
+          accountFieldsResult
+        ] = await Promise.all([
           supabase.from("partners").select("*").order("created_at"),
-          supabase.from("actions").select("*").order("action_date")
+          supabase.from("actions").select("*").order("action_date"),
+          supabase.from("partner_contacts").select("*").order("created_at"),
+          supabase.from("partner_account_lists").select("*").order("sort_order"),
+          supabase.from("partner_account_items").select("*").order("sort_order"),
+          supabase.from("partner_account_fields").select("*").order("sort_order")
         ]);
 
         if (partnersResult.error) {
@@ -427,12 +530,36 @@ export default function Home() {
           setPartners([]);
           setActions([]);
         } else {
-          setPartners((partnersResult.data ?? []).map(normalizePartner));
+          const contacts = contactsResult.error ? [] : (contactsResult.data ?? []);
+          const accountItems = accountItemsResult.error
+            ? []
+            : (accountItemsResult.data ?? []);
+          const accountLists = accountListsResult.error
+            ? []
+            : mapAccountListsWithItems(accountListsResult.data ?? [], accountItems);
+          const accountFields = accountFieldsResult.error
+            ? []
+            : (accountFieldsResult.data ?? []);
+
+          setPartners(
+            mergePartnerDetails(
+              partnersResult.data ?? [],
+              contacts,
+              accountLists,
+              accountFields
+            )
+          );
           setActions(actionsResult.error ? [] : (actionsResult.data ?? []));
 
           if (actionsResult.error) {
             setErrorMessage(
               `${actionsResult.error.message}. Uruchom migrację supabase/migration_v02_relations.sql w Supabase SQL Editor.`
+            );
+          }
+
+          if (contactsResult.error || accountListsResult.error || accountFieldsResult.error) {
+            setErrorMessage(
+              "Uruchom migrację supabase/migration_v03_partner_details.sql w Supabase SQL Editor, żeby zapisywać kontakty i konta."
             );
           }
         }
@@ -606,12 +733,20 @@ export default function Home() {
         return;
       }
 
+      await replacePartnerDetails(data.id, partnerDraft);
+      const partnerWithDetails = normalizePartner({
+        ...data,
+        contacts: partnerDraft.contacts,
+        accountLists: partnerDraft.accountLists,
+        accountFields: partnerDraft.accountFields
+      });
+
       setPartners((current) =>
         partnerEditorMode === "edit" && editingPartnerId
           ? current.map((partner) =>
-              partner.id === editingPartnerId ? normalizePartner(data) : partner
+              partner.id === editingPartnerId ? partnerWithDetails : partner
             )
-          : [...current, normalizePartner(data)]
+          : [...current, partnerWithDetails]
       );
     } else {
       setPartners((current) =>
@@ -727,6 +862,125 @@ export default function Home() {
     setPartners((current) =>
       current.map((item) =>
         item.id === partner.id ? { ...item, relation_status } : item
+      )
+    );
+  }
+
+  async function replacePartnerDetails(partnerId: string, draft: PartnerDraft) {
+    if (!supabase) {
+      return;
+    }
+
+    const contacts = draft.contacts
+      .filter((contact) => contact.name || contact.email || contact.phone)
+      .map((contact) => ({
+        id: contact.id,
+        partner_id: partnerId,
+        name: contact.name,
+        email: contact.email,
+        phone: contact.phone
+      }));
+    const accountLists = draft.accountLists.map((list, index) => ({
+      id: list.id,
+      partner_id: partnerId,
+      name: list.name,
+      sort_order: index
+    }));
+    const accountItems = draft.accountLists.flatMap((list) =>
+      list.items.map((item, index) => ({
+        id: item.id,
+        list_id: list.id,
+        account_number: item.account_number,
+        login: item.login,
+        password: item.password,
+        sort_order: index
+      }))
+    );
+    const accountFields = draft.accountFields.map((field, index) => ({
+      id: field.id,
+      partner_id: partnerId,
+      name: field.name,
+      value: field.value,
+      sort_order: index
+    }));
+
+    await supabase.from("partner_contacts").delete().eq("partner_id", partnerId);
+    await supabase.from("partner_account_fields").delete().eq("partner_id", partnerId);
+    await supabase.from("partner_account_lists").delete().eq("partner_id", partnerId);
+
+    if (contacts.length) {
+      await supabase.from("partner_contacts").insert(contacts);
+    }
+
+    if (accountLists.length) {
+      await supabase.from("partner_account_lists").insert(accountLists);
+    }
+
+    if (accountItems.length) {
+      await supabase.from("partner_account_items").insert(accountItems);
+    }
+
+    if (accountFields.length) {
+      await supabase.from("partner_account_fields").insert(accountFields);
+    }
+  }
+
+  function updatePartnerAccountLists(
+    partnerId: string,
+    updater: (lists: PartnerAccountList[]) => PartnerAccountList[]
+  ) {
+    setPartners((current) =>
+      current.map((partner) =>
+        partner.id === partnerId
+          ? { ...partner, accountLists: updater(partner.accountLists) }
+          : partner
+      )
+    );
+  }
+
+  function addPartnerAccountItem(partnerId: string, listId: string) {
+    const item: PartnerAccountItem = {
+      id: crypto.randomUUID(),
+      account_number: "",
+      login: "",
+      password: ""
+    };
+
+    if (supabase) {
+      void supabase.from("partner_account_items").insert({
+        id: item.id,
+        list_id: listId,
+        account_number: item.account_number,
+        login: item.login,
+        password: item.password,
+        sort_order:
+          partnerLookup
+            .get(partnerId)
+            ?.accountLists.find((list) => list.id === listId)?.items.length ?? 0
+      });
+    }
+
+    updatePartnerAccountLists(partnerId, (lists) =>
+      lists.map((list) =>
+        list.id === listId ? { ...list, items: [...list.items, item] } : list
+      )
+    );
+  }
+
+  function removePartnerAccountItem(
+    partnerId: string,
+    listId: string,
+    itemId: string
+  ) {
+    if (supabase) {
+      void supabase.from("partner_account_items").delete().eq("id", itemId);
+    }
+
+    updatePartnerAccountLists(partnerId, (lists) =>
+      lists.map((list) =>
+        list.id === listId
+          ? { ...list, items: list.items.filter((item) => item.id !== itemId) }
+          : list
       )
     );
   }
@@ -863,6 +1117,8 @@ export default function Home() {
                   onEdit={() => openPartnerEditor("edit", openPartner)}
                   onSave={closePartnerDetails}
                   onTabChange={setPartnerTab}
+                  onAddAccountItem={addPartnerAccountItem}
+                  onRemoveAccountItem={removePartnerAccountItem}
                   partner={openPartner}
                   updateActionStatus={updateActionStatus}
                 />
@@ -1137,16 +1393,13 @@ function PartnerEditorModal({
                 <EditorField label="Data rozpoczęcia współpracy" type="date" required value={draft.relation_start_date} onChange={(value) => update("relation_start_date", value)} />
                 <EditorSelect label="Podpisana umowa współpracy" value={draft.agreement_status} options={agreementStatuses} onChange={(value) => update("agreement_status", value as AgreementStatus)} />
                 <EditorSelect label="Grupa komunikacyjna" value={draft.communication_group} options={communicationGroups} onChange={(value) => update("communication_group", value as CommunicationGroup)} />
-                <EditorField label="Nazwa grupy" value={draft.group_name} onChange={(value) => update("group_name", value)} />
+                <EditorField className="groupNameField" label="Nazwa grupy" value={draft.group_name} onChange={(value) => update("group_name", value)} />
                 <label className="editorArea">
                   <span>Notatka</span>
                   <textarea value={draft.note} onChange={(event) => update("note", event.target.value)} />
                 </label>
                 <section className="editorContacts">
                   <span>Osoby kontaktowe</span>
-                  <button className="addInlineButton" type="button" onClick={addContact}>
-                    + Dodaj osobę kontaktową
-                  </button>
                   {draft.contacts.map((contact, index) => (
                     <div className="editorContactRow" key={contact.id}>
                       <input
@@ -1183,6 +1436,9 @@ function PartnerEditorModal({
                       />
                     </div>
                   ))}
+                  <button className="addInlineButton" type="button" onClick={addContact}>
+                    + Dodaj osobę kontaktową
+                  </button>
                 </section>
               </div>
             ) : null}
@@ -1198,84 +1454,36 @@ function PartnerEditorModal({
               <div className="editorAccountsGrid">
                 {draft.accountLists.map((list, listIndex) => (
                   <section className="editorAccountPanel" key={list.id}>
-                    <label>
-                      <span>Nazwa listy</span>
-                      <input
-                        value={list.name}
-                        onChange={(event) => {
-                          const accountLists = [...draft.accountLists];
-                          accountLists[listIndex] = { ...list, name: event.target.value };
-                          onChange({ ...draft, accountLists });
-                        }}
-                      />
-                    </label>
-                    <div className="accountHeader">
-                      <span>Numer</span>
-                      <span>Login</span>
-                      <span>Hasło</span>
+                    <div className="editorAccountPanelHeader">
+                      <label>
+                        <span>Nazwa listy</span>
+                        <input
+                          value={list.name}
+                          onChange={(event) => {
+                            const accountLists = [...draft.accountLists];
+                            accountLists[listIndex] = { ...list, name: event.target.value };
+                            onChange({ ...draft, accountLists });
+                          }}
+                        />
+                      </label>
+                      <button
+                        className="dangerPill"
+                        type="button"
+                        onClick={() =>
+                          onChange({
+                            ...draft,
+                            accountLists: draft.accountLists.filter(
+                              (item) => item.id !== list.id
+                            )
+                          })
+                        }
+                      >
+                        Usuń
+                      </button>
                     </div>
-                    {list.items.map((item, itemIndex) => (
-                      <div className="editorAccountRow" key={item.id}>
-                        <input
-                          placeholder="Numer"
-                          value={item.account_number}
-                          onChange={(event) => {
-                            const accountLists = [...draft.accountLists];
-                            const items = [...list.items];
-                            items[itemIndex] = {
-                              ...item,
-                              account_number: event.target.value
-                            };
-                            accountLists[listIndex] = { ...list, items };
-                            onChange({ ...draft, accountLists });
-                          }}
-                        />
-                        <input
-                          placeholder="Login"
-                          value={item.login}
-                          onChange={(event) => {
-                            const accountLists = [...draft.accountLists];
-                            const items = [...list.items];
-                            items[itemIndex] = { ...item, login: event.target.value };
-                            accountLists[listIndex] = { ...list, items };
-                            onChange({ ...draft, accountLists });
-                          }}
-                        />
-                        <input
-                          placeholder="Hasło"
-                          value={item.password}
-                          onChange={(event) => {
-                            const accountLists = [...draft.accountLists];
-                            const items = [...list.items];
-                            items[itemIndex] = { ...item, password: event.target.value };
-                            accountLists[listIndex] = { ...list, items };
-                            onChange({ ...draft, accountLists });
-                          }}
-                        />
-                      </div>
-                    ))}
-                    <button
-                      className="addInlineButton"
-                      type="button"
-                      onClick={() => {
-                        const accountLists = [...draft.accountLists];
-                        accountLists[listIndex] = {
-                          ...list,
-                          items: [
-                            ...list.items,
-                            {
-                              id: crypto.randomUUID(),
-                              account_number: "",
-                              login: "",
-                              password: ""
-                            }
-                          ]
-                        };
-                        onChange({ ...draft, accountLists });
-                      }}
-                    >
-                      + Dodaj element listy
-                    </button>
+                    <p className="emptyState">
+                      Elementy tej listy dodasz w ustawieniach partnera po zapisaniu.
+                    </p>
                   </section>
                 ))}
                 {draft.accountLists.length < 3 ? (
@@ -1286,7 +1494,16 @@ function PartnerEditorModal({
                 <section className="editorAccountPanel">
                   {draft.accountFields.map((field, index) => (
                     <label key={field.id}>
-                      <span>{field.name}</span>
+                      <span>Nazwa typu konta</span>
+                      <input
+                        value={field.name}
+                        onChange={(event) => {
+                          const accountFields = [...draft.accountFields];
+                          accountFields[index] = { ...field, name: event.target.value };
+                          onChange({ ...draft, accountFields });
+                        }}
+                      />
+                      <span>Wartość</span>
                       <input
                         value={field.value}
                         onChange={(event) => {
@@ -1295,6 +1512,20 @@ function PartnerEditorModal({
                           onChange({ ...draft, accountFields });
                         }}
                       />
+                      <button
+                        className="dangerPill"
+                        type="button"
+                        onClick={() =>
+                          onChange({
+                            ...draft,
+                            accountFields: draft.accountFields.filter(
+                              (item) => item.id !== field.id
+                            )
+                          })
+                        }
+                      >
+                        Usuń
+                      </button>
                     </label>
                   ))}
                   {draft.accountFields.length < 5 ? (
@@ -1332,16 +1563,18 @@ function EditorField({
   value,
   onChange,
   type = "text",
-  required = false
+  required = false,
+  className = ""
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   type?: string;
   required?: boolean;
+  className?: string;
 }) {
   return (
-    <label className="editorField">
+    <label className={`editorField ${className}`}>
       <span>{label}</span>
       <input required={required} type={type} value={value} onChange={(event) => onChange(event.target.value)} />
     </label>
@@ -1383,6 +1616,8 @@ function PartnerDetails({
   onDelete,
   onEdit,
   onSave,
+  onAddAccountItem,
+  onRemoveAccountItem,
   updateActionStatus
 }: {
   partner: Partner;
@@ -1393,6 +1628,8 @@ function PartnerDetails({
   onDelete: () => void;
   onEdit: () => void;
   onSave: () => void;
+  onAddAccountItem: (partnerId: string, listId: string) => void;
+  onRemoveAccountItem: (partnerId: string, listId: string, itemId: string) => void;
   updateActionStatus: (action: PartnerAction, status: ActionStatus) => void;
 }) {
   return (
@@ -1418,7 +1655,13 @@ function PartnerDetails({
       <div className="partnerDetailsBody">
         {activeTab === "general" ? <PartnerGeneralTab partner={partner} /> : null}
         {activeTab === "equipment" ? <PartnerEquipmentTab /> : null}
-        {activeTab === "accounts" ? <PartnerAccountsTab partner={partner} /> : null}
+        {activeTab === "accounts" ? (
+          <PartnerAccountsTab
+            onAddAccountItem={onAddAccountItem}
+            onRemoveAccountItem={onRemoveAccountItem}
+            partner={partner}
+          />
+        ) : null}
         {activeTab === "history" ? (
           <PartnerHistoryTab
             actions={actions}
@@ -1447,23 +1690,26 @@ function PartnerDetails({
 function PartnerGeneralTab({ partner }: { partner: Partner }) {
   return (
     <div className="detailsGrid generalGrid">
-      <DetailField label="Typ partnera" />
+      <DetailField label="Typ partnera" value={capitalize(partner.partner_type)} />
       <DetailField label="Data rozpoczęcia współpracy" value={formatDate(partner.relation_start_date)} />
-      <DetailField label="Podpisana umowa współpracy" />
+      <DetailField label="Podpisana umowa współpracy" value={capitalize(partner.agreement_status)} />
       <DetailField className="wide" label="E-mail" value={partner.email} />
-      <DetailField label="Telefon" />
-      <DetailField label="Aplikacja" />
-      <DetailField className="wide" label="Nazwa grupy" />
-      <DetailArea label="Notatka" />
+      <DetailField label="Telefon" value={partner.phone} />
+      <DetailField label="Grupa komunikacyjna" value={capitalize(partner.communication_group)} />
+      <DetailField className="wide" label="Nazwa grupy" value={partner.group_name} />
+      <DetailField label="Aplikacja" value={partner.application} />
+      <DetailArea label="Notatka" value={partner.note} />
       <section className="detailCard contactsCard">
         <span>Osoby kontaktowe</span>
-        <div className="contactRow">
-          <strong>{partner.contact_person}</strong>
-          <small>{partner.email}</small>
-          <small>+48 234234234</small>
-          <button type="button">Edytuj</button>
-          <button className="dangerPill" type="button">Usuń</button>
-        </div>
+        {partner.contacts.map((contact) => (
+          <div className="contactRow" key={contact.id}>
+            <strong>{contact.name}</strong>
+            <small>{contact.email}</small>
+            <small>{contact.phone}</small>
+            <button type="button">Edytuj</button>
+            <button className="dangerPill" type="button">Usuń</button>
+          </div>
+        ))}
         <button className="addInlineButton" type="button">
           + Dodaj osobę kontaktową
         </button>
@@ -1514,48 +1760,72 @@ function PartnerEquipmentTab() {
   );
 }
 
-function PartnerAccountsTab({ partner }: { partner: Partner }) {
+function PartnerAccountsTab({
+  partner,
+  onAddAccountItem,
+  onRemoveAccountItem
+}: {
+  partner: Partner;
+  onAddAccountItem: (partnerId: string, listId: string) => void;
+  onRemoveAccountItem: (partnerId: string, listId: string, itemId: string) => void;
+}) {
   return (
     <div className="accountsGrid">
-      <AccountPanel title="Konta RevoCure VR" />
+      {partner.accountLists.length === 0 ? (
+        <section className="accountPanel">
+          <span>Listy kont</span>
+          <p className="emptyState">Dodaj listę kont w edycji partnera.</p>
+        </section>
+      ) : null}
+      {partner.accountLists.map((list) => (
+        <AccountPanel
+          key={list.id}
+          list={list}
+          onAdd={() => onAddAccountItem(partner.id, list.id)}
+          onRemove={(itemId) => onRemoveAccountItem(partner.id, list.id, itemId)}
+        />
+      ))}
       <section className="accountSettings">
-        <DetailField label="Organizacja Meta For Work" value={partner.name} />
-        <div className="settingsPair">
-          <DetailField label="Tryb współdzielony / Kiosk Mode" value="Tak" />
-          <DetailField label="Podpięcie pod admina" value="Tak" />
-        </div>
-        <AccountPanel compact title="Użytkownicy Meta For Work" />
-      </section>
-      <AccountPanel title="Konta RevoCure Assistance" />
-      <section className="accountSettings">
-        <DetailField label="Konto Google organizacji" value={partner.email || "Wisla@gmail.com"} />
-        <DetailField label="E-mail organizacji" value={partner.email || "Wisla@gmail.com"} />
+        {partner.accountFields.length === 0 ? (
+          <p className="emptyState">Brak pojedynczych kont.</p>
+        ) : null}
+        {partner.accountFields.map((field) => (
+          <DetailField key={field.id} label={field.name} value={field.value} />
+        ))}
       </section>
     </div>
   );
 }
 
 function AccountPanel({
-  title,
-  compact = false
+  list,
+  onAdd,
+  onRemove
 }: {
-  title: string;
-  compact?: boolean;
+  list: PartnerAccountList;
+  onAdd: () => void;
+  onRemove: (itemId: string) => void;
 }) {
   return (
-    <section className={`accountPanel ${compact ? "compact" : ""}`}>
-      <span>{title}</span>
+    <section className="accountPanel">
+      <span>{list.name}</span>
       <div className="accountHeader">
-        <span>ID</span>
+        <span>Numer</span>
         <span>Login</span>
         <span>Hasło</span>
+        <span />
       </div>
-      <div className="accountRow">
-        <span>2342342344</span>
-        <span>MarWłaz</span>
-        <span>************</span>
-      </div>
-      <button className="addInlineButton" type="button">
+      {list.items.map((item) => (
+        <div className="accountRow" key={item.id}>
+          <span>{item.account_number || "Numer"}</span>
+          <span>{item.login || "Login"}</span>
+          <span>{item.password || "Hasło"}</span>
+          <button className="dangerPill" type="button" onClick={() => onRemove(item.id)}>
+            Usuń
+          </button>
+        </div>
+      ))}
+      <button className="addInlineButton" type="button" onClick={onAdd}>
         + Dodaj konto
       </button>
     </section>
@@ -1616,11 +1886,11 @@ function DetailField({
   );
 }
 
-function DetailArea({ label }: { label: string }) {
+function DetailArea({ label, value = "" }: { label: string; value?: string }) {
   return (
     <label className="detailArea">
       <span>{label}</span>
-      <textarea readOnly />
+      <textarea readOnly value={value} />
     </label>
   );
 }

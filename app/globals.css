@@ -540,7 +540,7 @@ h2 {
 }
 
 .generalGrid {
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.58fr) minmax(0, 0.58fr) minmax(0, 1.22fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.78fr) minmax(0, 0.78fr) minmax(0, 1.1fr);
 }
 
 .detailField,
@@ -589,6 +589,10 @@ h2 {
   grid-column: span 2;
 }
 
+.detailField {
+  align-self: start;
+}
+
 .detailArea {
   grid-column: span 2;
 }
@@ -609,6 +613,7 @@ h2 {
 }
 
 .contactsCard {
+  align-content: start;
   grid-column: span 2;
 }
 
@@ -706,7 +711,7 @@ h2 {
 .accountRow {
   align-items: center;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr)) 74px;
 }
 
 .accountHeader {
@@ -1018,6 +1023,10 @@ h2 {
   gap: 8px;
 }
 
+.groupNameField {
+  align-self: start;
+}
+
 .editorField span,
 .editorArea span,
 .editorContacts > span,
@@ -1067,6 +1076,7 @@ h2 {
 }
 
 .editorContacts {
+  align-content: start;
   background: rgba(18, 18, 18, 0.34);
   border-radius: 20px;
   grid-column: span 2;
@@ -1100,6 +1110,31 @@ h2 {
   gap: 28px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   min-height: 420px;
+}
+
+.editorAccountPanelHeader {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 82px;
+}
+
+.editorAccountPanelHeader label {
+  display: grid;
+  gap: 8px;
+}
+
+.editorAccountPanelHeader button,
+.editorAccountPanel > label button {
+  border: 0;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.84);
+  min-height: 34px;
+}
+
+.editorAccountPanel > label {
+  display: grid;
+  gap: 8px;
 }
 
 .editorAccountPanel {
