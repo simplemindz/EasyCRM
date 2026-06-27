@@ -935,6 +935,14 @@ export default function Home() {
                       </article>
                     ))}
                   </div>
+                  <button
+                    className="addPartnerButton"
+                    type="button"
+                    onClick={() => openPartnerEditor("create")}
+                  >
+                    <Plus size={18} aria-hidden="true" />
+                    Dodaj partnera
+                  </button>
                 </>
               )}
             </div>
