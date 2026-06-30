@@ -166,7 +166,7 @@ button {
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  padding: 20px 26px 24px;
+  padding: 14px 18px 20px;
 }
 
 h1,
@@ -284,7 +284,7 @@ h2 {
   padding: 0 16px 0 20px;
 }
 
-.partnersPanel .panelHeader h1 {
+.panelHeader h1 {
   font-size: 16px;
 }
 
