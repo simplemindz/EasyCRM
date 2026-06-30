@@ -542,7 +542,8 @@ h2 {
 }
 
 .generalGrid {
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.78fr) minmax(0, 0.78fr) minmax(0, 1.1fr);
+  align-content: start;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .detailField,
@@ -590,7 +591,7 @@ h2 {
 }
 
 .detailField.wide {
-  grid-column: span 2;
+  grid-column: auto;
 }
 
 .detailField {
@@ -598,7 +599,7 @@ h2 {
 }
 
 .detailArea {
-  grid-column: span 2;
+  grid-column: 1 / -1;
   min-width: 0;
 }
 
@@ -619,7 +620,7 @@ h2 {
 
 .contactsCard {
   align-content: start;
-  grid-column: span 2;
+  grid-column: 1 / -1;
   min-width: 0;
   overflow: hidden;
 }
@@ -782,10 +783,12 @@ h2 {
 }
 
 .historyRows {
+  align-content: start;
   background: rgba(18, 18, 18, 0.34);
   border-radius: 22px;
   display: grid;
   gap: 12px;
+  grid-auto-rows: max-content;
   min-height: 360px;
   padding: 24px;
 }
@@ -795,6 +798,7 @@ h2 {
   display: grid;
   gap: 18px;
   grid-template-columns: 110px 24px minmax(160px, 1fr) 110px minmax(220px, 1.4fr) 150px;
+  min-height: 42px;
 }
 
 .historyRow p {
@@ -1054,7 +1058,7 @@ h2 {
 .editorGeneralGrid {
   display: grid;
   gap: 16px 20px;
-  grid-template-columns: 1.1fr 1.25fr 1.12fr 0.55fr;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .editorField,
@@ -1107,7 +1111,7 @@ h2 {
 }
 
 .editorArea {
-  grid-column: span 2;
+  grid-column: 1 / -1;
 }
 
 .editorArea textarea {
@@ -1121,7 +1125,7 @@ h2 {
   align-content: start;
   background: rgba(18, 18, 18, 0.34);
   border-radius: 20px;
-  grid-column: span 2;
+  grid-column: 1 / -1;
   min-height: 190px;
   padding: 14px;
 }

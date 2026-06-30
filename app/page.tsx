@@ -1421,7 +1421,7 @@ function PartnerEditorModal({
                 <EditorSelect label="Typ" value={draft.partner_type} options={partnerTypes} onChange={(value) => update("partner_type", value as PartnerType)} />
                 <EditorField label="Data rozpoczęcia współpracy" type="date" required value={draft.relation_start_date} onChange={(value) => update("relation_start_date", value)} />
                 <EditorSelect label="Podpisana umowa współpracy" value={draft.agreement_status} options={agreementStatuses} onChange={(value) => update("agreement_status", value as AgreementStatus)} />
-                <EditorSelect label="Grupa komunikacyjna" value={draft.communication_group} options={communicationGroups} onChange={(value) => update("communication_group", value as CommunicationGroup)} />
+                <EditorSelect label="Aplikacja komunikacyjna" value={draft.communication_group} options={communicationGroups} onChange={(value) => update("communication_group", value as CommunicationGroup)} />
                 <EditorField className="groupNameField" label="Nazwa grupy" value={draft.group_name} onChange={(value) => update("group_name", value)} />
                 <label className="editorArea">
                   <span>Notatka</span>
@@ -1733,8 +1733,8 @@ function PartnerGeneralTab({ partner }: { partner: Partner }) {
       <DetailField label="Podpisana umowa współpracy" value={capitalize(partner.agreement_status)} />
       <DetailField className="wide" label="E-mail" value={partner.email} />
       <DetailField label="Telefon" value={partner.phone} />
-      <DetailField label="Grupa komunikacyjna" value={capitalize(partner.communication_group)} />
-      <DetailField className="wide" label="Nazwa grupy" value={partner.group_name} />
+      <DetailField label="Aplikacja komunikacyjna" value={capitalize(partner.communication_group)} />
+      <DetailField label="Nazwa grupy" value={partner.group_name} />
       <DetailArea label="Notatka" value={partner.note} />
       <section className="detailCard contactsCard">
         <span>Osoby kontaktowe</span>
