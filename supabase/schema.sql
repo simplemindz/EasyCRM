@@ -75,12 +75,57 @@ create table if not exists public.actions (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.equipment (
+  id uuid primary key default gen_random_uuid(),
+  internal_id text not null unique,
+  equipment_type text not null default 'inne'
+    check (
+      equipment_type in (
+        'komputer',
+        'laptop',
+        'tablet',
+        'VR',
+        'telefon',
+        'modem',
+        'akcesorium VR',
+        'akcesorium komputerowe',
+        'inne'
+      )
+    ),
+  name text not null default '',
+  serial_number text not null default '',
+  purchase_date date,
+  purchase_amount numeric(12, 2),
+  purchase_currency text not null default 'PLN'
+    check (purchase_currency in ('PLN', 'EUR', 'USD')),
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.partner_equipment_assignments (
+  id uuid primary key default gen_random_uuid(),
+  partner_id uuid not null references public.partners(id) on delete cascade,
+  equipment_id uuid not null references public.equipment(id) on delete cascade,
+  guardian_name text not null default '',
+  relation text not null default 'wypożyczenie'
+    check (relation in ('wypożyczenie', 'wydanie')),
+  boundary_date date,
+  assigned_at date not null default current_date,
+  returned_at date,
+  created_at timestamptz not null default now()
+);
+
+create unique index if not exists partner_equipment_active_assignment_idx
+  on public.partner_equipment_assignments(equipment_id)
+  where returned_at is null;
+
 alter table public.partners enable row level security;
 alter table public.actions enable row level security;
 alter table public.partner_contacts enable row level security;
 alter table public.partner_account_lists enable row level security;
 alter table public.partner_account_items enable row level security;
 alter table public.partner_account_fields enable row level security;
+alter table public.equipment enable row level security;
+alter table public.partner_equipment_assignments enable row level security;
 
 create policy "Allow public read partners"
   on public.partners for select
@@ -182,4 +227,38 @@ create policy "Allow public update partner account fields"
 
 create policy "Allow public delete partner account fields"
   on public.partner_account_fields for delete
+  using (true);
+
+create policy "Allow public read equipment"
+  on public.equipment for select
+  using (true);
+
+create policy "Allow public insert equipment"
+  on public.equipment for insert
+  with check (true);
+
+create policy "Allow public update equipment"
+  on public.equipment for update
+  using (true)
+  with check (true);
+
+create policy "Allow public delete equipment"
+  on public.equipment for delete
+  using (true);
+
+create policy "Allow public read partner equipment assignments"
+  on public.partner_equipment_assignments for select
+  using (true);
+
+create policy "Allow public insert partner equipment assignments"
+  on public.partner_equipment_assignments for insert
+  with check (true);
+
+create policy "Allow public update partner equipment assignments"
+  on public.partner_equipment_assignments for update
+  using (true)
+  with check (true);
+
+create policy "Allow public delete partner equipment assignments"
+  on public.partner_equipment_assignments for delete
   using (true);

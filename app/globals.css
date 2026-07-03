@@ -2134,6 +2134,210 @@ h2 {
   background: transparent;
 }
 
+.partnerEquipmentCard {
+  min-height: 420px;
+}
+
+.equipmentCardHeader {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.equipmentCardHeader > div {
+  display: flex;
+  gap: 18px;
+}
+
+.partnerEquipmentTable .detailsTableHeader,
+.partnerEquipmentTable .detailsTableRow {
+  grid-template-columns: 0.8fr 0.8fr 1.15fr 1.15fr 1.2fr 1.05fr 1.05fr 0.8fr;
+}
+
+.partnerEquipmentTable select,
+.partnerEquipmentTable input,
+.equipmentAssignmentEditor select,
+.equipmentAssignmentEditor input {
+  background: rgba(193, 205, 226, 0.72);
+  border: 0;
+  color: rgba(20, 24, 32, 0.86);
+  font: inherit;
+  font-size: 10px;
+  min-height: 34px;
+  outline: 0;
+  padding: 0 12px;
+  width: 100%;
+}
+
+.partnerEquipmentTable input:disabled,
+.equipmentAssignmentEditor input:disabled {
+  color: rgba(20, 24, 32, 0.36);
+}
+
+.equipmentCreatePanel {
+  align-self: center;
+  margin-top: 22dvh;
+  max-width: none;
+  width: calc(100vw - 56px);
+}
+
+.equipmentCreateForm,
+.equipmentAssignForm {
+  display: grid;
+  gap: 30px;
+}
+
+.equipmentCreateForm h2,
+.equipmentAssignForm h2 {
+  font-size: 20px;
+  font-weight: 400;
+  margin: 0;
+  text-align: left;
+}
+
+.equipmentCreateGrid {
+  align-items: end;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 120px minmax(210px, 0.8fr) minmax(220px, 1fr) minmax(280px, 1.3fr) minmax(160px, 0.7fr) minmax(220px, 0.9fr);
+}
+
+.equipmentGeneratedId {
+  display: grid;
+  gap: 14px;
+}
+
+.equipmentGeneratedId span,
+.equipmentAssignmentEditor span,
+.equipmentChoicePanel > span {
+  color: rgba(20, 24, 32, 0.68);
+  font-size: 10px;
+}
+
+.equipmentGeneratedId strong {
+  color: #080b10;
+  font-size: 22px;
+  font-weight: 400;
+  min-height: 40px;
+}
+
+.equipmentPriceFields {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) 86px;
+}
+
+.equipmentCreateGrid .field,
+.equipmentCreateGrid .editorField {
+  gap: 10px;
+}
+
+.equipmentCreateGrid .field select,
+.equipmentCreateGrid .editorField input {
+  min-height: 44px;
+}
+
+.equipmentAssignPanel {
+  height: calc(100dvh - 76px);
+  max-width: none;
+  width: calc(100vw - 52px);
+}
+
+.equipmentAssignForm {
+  height: 100%;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.equipmentAssignGrid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(440px, 0.68fr) minmax(620px, 1fr);
+  min-height: 0;
+}
+
+.equipmentChoicePanel {
+  background: rgba(206, 218, 236, 0.5);
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 16px;
+  min-height: 0;
+  padding: 18px 12px;
+}
+
+.equipmentChoiceHeader,
+.equipmentChoiceRow {
+  display: grid;
+  grid-template-columns: 0.7fr 0.75fr 1fr 1.1fr 140px;
+}
+
+.equipmentAssignedHeader,
+.equipmentAssignedRow {
+  display: grid;
+  grid-template-columns: 0.7fr 0.7fr 1fr 1fr 1.1fr 1fr 1fr;
+}
+
+.equipmentChoiceHeader,
+.equipmentAssignedHeader {
+  color: rgba(20, 24, 32, 0.62);
+  font-size: 9px;
+  padding: 0 12px;
+}
+
+.equipmentChoiceRows,
+.equipmentAssignedRows {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 12px;
+}
+
+.equipmentChoiceRow,
+.equipmentAssignedRow {
+  align-items: center;
+  background: rgba(193, 205, 226, 0.68);
+  color: rgba(20, 24, 32, 0.82);
+  font-size: 10px;
+  min-height: 50px;
+  padding: 0 12px;
+}
+
+.equipmentChoiceRow button,
+.equipmentAssignedRow button {
+  background: rgba(20, 24, 32, 0.62);
+  border: 0;
+  color: #ffffff;
+  min-height: 40px;
+}
+
+.equipmentChoiceRow.selected {
+  box-shadow: inset 0 0 0 2px rgba(20, 24, 32, 0.28);
+}
+
+.equipmentChoiceRow.unavailable {
+  color: rgba(20, 24, 32, 0.44);
+}
+
+.equipmentChoiceRow.unavailable small {
+  font-size: 9px;
+  text-align: center;
+}
+
+.equipmentAssignmentEditor {
+  background: rgba(193, 205, 226, 0.42);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 8px;
+  padding: 14px;
+}
+
+.equipmentAssignmentEditor label {
+  display: grid;
+  gap: 8px;
+}
+
 @media (max-width: 1100px) {
   .appShell {
     grid-template-columns: 94px minmax(0, 1fr);
