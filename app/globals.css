@@ -1,17 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap");
 
 :root {
-  --text: #f7f7f7;
-  --muted: rgba(247, 247, 247, 0.62);
-  --faint: rgba(247, 247, 247, 0.36);
-  --panel: rgba(34, 34, 34, 0.76);
-  --panel-strong: rgba(44, 44, 44, 0.82);
-  --row: rgba(42, 42, 42, 0.84);
-  --input: rgba(4, 4, 4, 0.84);
-  --line: rgba(255, 255, 255, 0.12);
-  --shadow: 0 28px 90px rgba(0, 0, 0, 0.48);
-  --radius: 24px;
-  --radius-large: 30px;
+  --text: #141820;
+  --muted: rgba(20, 24, 32, 0.62);
+  --faint: rgba(20, 24, 32, 0.36);
+  --panel: rgba(219, 230, 246, 0.82);
+  --panel-strong: rgba(198, 211, 232, 0.7);
+  --row: rgba(205, 217, 236, 0.78);
+  --input: rgba(193, 205, 226, 0.74);
+  --line: rgba(20, 24, 32, 0.22);
+  --shadow: none;
+  --radius: 0;
+  --radius-large: 0;
 }
 
 * {
@@ -27,7 +27,7 @@ body {
 }
 
 body {
-  background: #050505;
+  background: #a9b8cf;
   color: var(--text);
   font-family: Poppins, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -44,18 +44,17 @@ button {
 
 .appShell {
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.54), rgba(0, 0, 0, 0.08) 48%, rgba(0, 0, 0, 0.54)),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.5)),
-    url("/background.jpg?v=20260624") center / cover no-repeat;
+    linear-gradient(180deg, rgba(167, 181, 205, 0.96) 0%, rgba(221, 232, 247, 0.92) 68%, rgba(248, 253, 255, 0.98) 100%),
+    radial-gradient(circle at 52% 0%, rgba(237, 243, 253, 0.72), rgba(169, 184, 207, 0.1) 34%, transparent 58%);
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
+  grid-template-columns: 205px minmax(0, 1fr);
   height: 100dvh;
   min-height: 100dvh;
   overflow: hidden;
 }
 
 .appShell::before {
-  background: rgba(0, 0, 0, 0.28);
+  background: linear-gradient(90deg, rgba(134, 149, 174, 0.22), transparent 28%, rgba(255, 255, 255, 0.18));
   content: "";
   inset: 0;
   pointer-events: none;
@@ -74,7 +73,7 @@ button {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding: 54px 26px 34px;
+  padding: 52px 30px 34px;
 }
 
 .brandLogo {
@@ -93,17 +92,17 @@ button {
   align-items: center;
   color: var(--text);
   display: flex;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   gap: 16px;
 }
 
 .navItem.muted {
-  color: rgba(255, 255, 255, 0.32);
+  color: rgba(20, 24, 32, 0.34);
 }
 
 .userBlock {
-  color: rgba(255, 255, 255, 0.58);
+  color: rgba(20, 24, 32, 0.36);
   display: grid;
   gap: 4px;
   margin-top: auto;
@@ -115,7 +114,7 @@ button {
 }
 
 .userBlock strong {
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(20, 24, 32, 0.78);
   font-size: 11px;
   margin-top: 12px;
 }
@@ -123,7 +122,7 @@ button {
 .userBlock button {
   background: transparent;
   border: 0;
-  color: rgba(255, 255, 255, 0.36);
+  color: rgba(20, 24, 32, 0.28);
   font-weight: 800;
   margin-top: 12px;
   padding: 0;
@@ -132,12 +131,12 @@ button {
 
 .relationsView {
   display: grid;
-  gap: 18px;
+  gap: 10px;
   grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   height: 100dvh;
   min-height: 0;
   overflow: hidden;
-  padding: 64px 46px 56px 28px;
+  padding: 22px 24px 22px 0;
   transition: grid-template-rows 180ms ease;
 }
 
@@ -151,9 +150,9 @@ button {
 
 .glassPanel,
 .modalPanel {
-  backdrop-filter: blur(24px) saturate(125%);
+  backdrop-filter: none;
   background: var(--panel);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(156, 171, 198, 0.32);
   box-shadow: var(--shadow);
 }
 
@@ -1372,6 +1371,450 @@ h2 {
 
 .modalActions .dangerAction:hover {
   color: #ffffff;
+}
+
+* {
+  border-radius: 0 !important;
+}
+
+.brandLogo {
+  filter: brightness(0);
+}
+
+.navItem svg,
+.panelArrows button,
+.openPartnerButton,
+.deleteButton,
+.quickButton svg,
+.addPartnerButton svg {
+  color: currentColor;
+}
+
+.glassPanel {
+  background:
+    linear-gradient(180deg, rgba(215, 225, 243, 0.88), rgba(226, 236, 250, 0.82));
+}
+
+.actionsPanel,
+.partnersPanel {
+  padding: 22px 22px 24px;
+}
+
+.panelHeader {
+  min-height: 34px;
+  padding: 0 2px 0 6px;
+}
+
+.panelHeader h1 {
+  color: rgba(20, 24, 32, 0.86);
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.panelArrows {
+  gap: 12px;
+}
+
+.panelArrows button {
+  color: #07090d;
+  height: 26px;
+  width: 26px;
+}
+
+.panelArrows button:disabled {
+  color: rgba(20, 24, 32, 0.36);
+}
+
+.actionsContent {
+  gap: 12px;
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+  padding-top: 20px;
+}
+
+.actionsList,
+.partnerRows,
+.partnerDetailsBody {
+  scrollbar-color: rgba(20, 24, 32, 0.32) rgba(157, 172, 200, 0.25);
+}
+
+.actionsList::-webkit-scrollbar-track,
+.partnerRows::-webkit-scrollbar-track,
+.partnerDetailsBody::-webkit-scrollbar-track,
+.partnerEditorBody::-webkit-scrollbar-track {
+  background: rgba(157, 172, 200, 0.24);
+}
+
+.actionsList::-webkit-scrollbar-thumb,
+.partnerRows::-webkit-scrollbar-thumb,
+.partnerDetailsBody::-webkit-scrollbar-thumb,
+.partnerEditorBody::-webkit-scrollbar-thumb {
+  background: rgba(20, 24, 32, 0.28);
+}
+
+.actionRow {
+  gap: 16px;
+  grid-template-columns: 108px minmax(0, 1fr);
+}
+
+.actionRow > time,
+.partnerRow > time,
+.nextAction time,
+.nextAction span {
+  color: rgba(20, 24, 32, 0.72);
+  font-size: 12px;
+}
+
+.actionBody {
+  background: rgba(193, 205, 226, 0.62);
+  color: var(--text);
+  grid-template-columns: 130px minmax(150px, 1fr) 150px;
+  min-height: 42px;
+  padding: 4px 10px 4px 22px;
+}
+
+.actionBody strong,
+.partnerRow strong {
+  color: #080b10;
+  font-size: 12px;
+}
+
+.actionBody span,
+.actionBody p {
+  color: rgba(20, 24, 32, 0.76);
+  font-size: 10px;
+}
+
+.quickButton {
+  align-self: stretch;
+  background: rgba(205, 217, 236, 0.38);
+  border-left: 1px solid rgba(156, 171, 198, 0.38);
+  color: rgba(20, 24, 32, 0.34);
+  font-size: 18px;
+  min-height: 0;
+}
+
+.quickButton:hover {
+  background: rgba(205, 217, 236, 0.58);
+  color: rgba(20, 24, 32, 0.74);
+}
+
+.partnersContent {
+  background: rgba(230, 239, 251, 0.42);
+  margin-top: 12px;
+  padding: 12px 12px 16px;
+}
+
+.panelToolbar {
+  right: 22px;
+  top: 12px;
+}
+
+.sortControl {
+  color: rgba(20, 24, 32, 0.62);
+}
+
+.sortControl span,
+.partnersHeader,
+.detailField span,
+.detailArea span,
+.detailCard > span,
+.detailsTableCard > span,
+.accountPanel > span,
+.accountSettings > span,
+.historyPanel > span,
+.editorField span,
+.editorArea span,
+.editorContacts > span,
+.editorEmptyList > span,
+.editorAccountPanel span,
+.field span {
+  color: rgba(20, 24, 32, 0.62);
+  font-size: 10px;
+}
+
+.sortControl select,
+.field select,
+.field input,
+.detailField input,
+.detailArea textarea,
+.editorField input,
+.editorField select,
+.editorArea textarea,
+.editorContactRow input,
+.editorAccountPanel input,
+.editorAccountRow input {
+  background: rgba(193, 205, 226, 0.66);
+  color: rgba(20, 24, 32, 0.86);
+}
+
+.sortControl select {
+  min-height: 34px;
+}
+
+.partnersHeader {
+  color: rgba(20, 24, 32, 0.52);
+  min-height: 34px;
+}
+
+.partnerRows {
+  gap: 6px;
+  grid-auto-rows: 50px;
+  padding-right: 0;
+}
+
+.partnerRow {
+  background: rgba(206, 218, 236, 0.72);
+  color: rgba(20, 24, 32, 0.78);
+  height: 50px;
+}
+
+.openPartnerButton,
+.deleteButton {
+  background: transparent;
+  color: #080b10;
+  height: 28px;
+  width: 28px;
+}
+
+.openPartnerButton:hover,
+.deleteButton:hover {
+  background: rgba(20, 24, 32, 0.08);
+  color: #080b10;
+}
+
+.addPartnerButton,
+.relationStatus,
+.statusSelect,
+.ghostAction,
+.partnerEditorActions button,
+.modalStatusSelect {
+  background: #030303;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.partnerTabs {
+  background: rgba(193, 205, 226, 0.64);
+  min-height: 42px;
+  padding: 0;
+}
+
+.partnerTabs button {
+  color: rgba(20, 24, 32, 0.66);
+  font-size: 11px;
+}
+
+.partnerTabs button.active {
+  background: #030303;
+  color: #ffffff;
+}
+
+.partnerDetailsTop {
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.partnerDetailsTop h2 {
+  color: #080b10;
+  font-size: 20px;
+}
+
+.detailsGrid {
+  gap: 12px;
+}
+
+.detailField,
+.detailArea,
+.detailCard,
+.detailsTableCard,
+.accountPanel,
+.accountSettings,
+.historyPanel,
+.editorField,
+.editorArea,
+.editorContacts {
+  color: rgba(20, 24, 32, 0.72);
+  gap: 8px;
+}
+
+.detailField input,
+.detailArea textarea,
+.contactRow,
+.detailsTableRow,
+.accountRow,
+.accountHeader,
+.historyRow {
+  background: rgba(193, 205, 226, 0.66);
+  color: rgba(20, 24, 32, 0.86);
+}
+
+.detailCard,
+.detailsTableCard,
+.accountPanel,
+.editorContacts,
+.editorEmptyList,
+.editorAccountPanel,
+.historyRows {
+  background: rgba(206, 218, 236, 0.54);
+}
+
+.contactRow button,
+.detailsTableRow button,
+.partnerDetailsActions button,
+.accountDeleteButton {
+  background: rgba(20, 24, 32, 0.12);
+  color: rgba(20, 24, 32, 0.82);
+}
+
+.dangerPill,
+.partnerDetailsActions .dangerAction,
+.accountDeleteButton {
+  background: rgba(146, 28, 28, 0.82) !important;
+  color: #ffffff !important;
+}
+
+.addInlineButton,
+.editorAddPanel {
+  color: rgba(20, 24, 32, 0.42);
+}
+
+.historyRows {
+  padding: 16px;
+}
+
+.historyRow {
+  gap: 14px;
+}
+
+.partnerDetailsActions {
+  gap: 10px;
+  padding-top: 14px;
+}
+
+.partnerDetailsActions .primaryAction {
+  background: #030303;
+  color: #ffffff;
+}
+
+.relationStatus select,
+.statusSelect select,
+.modalStatusSelect select {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.relationStatus select,
+.statusSelect select {
+  background: transparent;
+}
+
+.statusSelect svg:first-child,
+.relationStatus > svg,
+.statusSelect svg:last-child,
+.sortControl svg {
+  color: currentColor;
+}
+
+.nextAction,
+.ghostAction {
+  background: rgba(193, 205, 226, 0.66);
+  color: rgba(20, 24, 32, 0.78);
+}
+
+.statusDot {
+  height: 20px;
+  width: 20px;
+}
+
+.emptyState {
+  color: rgba(20, 24, 32, 0.5);
+}
+
+.notice {
+  background: rgba(170, 48, 48, 0.18);
+  border-color: rgba(170, 48, 48, 0.28);
+  color: #5b1111;
+}
+
+.modalBackdrop {
+  backdrop-filter: none;
+  background: rgba(151, 166, 193, 0.64);
+}
+
+.modalPanel {
+  background: linear-gradient(180deg, rgba(221, 231, 246, 0.98), rgba(236, 244, 252, 0.98));
+  color: var(--text);
+  padding: 36px 40px 42px;
+}
+
+.modalPanel h2,
+.partnerEditorHeader h2 {
+  color: #080b10;
+}
+
+.partnerEditorPanel {
+  padding: 22px 28px 24px;
+}
+
+.partnerEditorBody {
+  scrollbar-color: rgba(20, 24, 32, 0.32) rgba(157, 172, 200, 0.25);
+}
+
+.editorGeneralGrid {
+  gap: 12px;
+}
+
+.editorField input,
+.editorField select,
+.editorArea textarea,
+.editorContactRow input,
+.editorAccountPanel input,
+.editorAccountRow input {
+  min-height: 34px;
+}
+
+.partnerEditorActions {
+  gap: 12px;
+}
+
+.modalForm {
+  gap: 22px;
+}
+
+.field {
+  gap: 10px;
+}
+
+.field input,
+.field select,
+.modalStatusSelect {
+  min-height: 58px;
+}
+
+.modalActions button {
+  color: rgba(20, 24, 32, 0.82);
+  font-size: 16px;
+}
+
+.modalActions .dangerAction {
+  color: #921c1c;
+}
+
+.field input[type="date"] {
+  color-scheme: light;
+}
+
+.field input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: none;
+}
+
+.field input:focus,
+.field select:focus,
+.sortControl select:focus,
+.statusSelect select:focus,
+.editorField input:focus,
+.editorField select:focus,
+.detailField input:focus,
+.detailArea textarea:focus {
+  box-shadow: 0 0 0 2px rgba(20, 24, 32, 0.16);
 }
 
 @media (max-width: 1100px) {

@@ -6,9 +6,9 @@ import {
   Check,
   ChevronDown,
   ChevronRight,
-  ChevronUp,
   Handshake,
   Home as HomeIcon,
+  Minus,
   Plus,
   Settings,
   Trash2,
@@ -1989,7 +1989,7 @@ function PanelControls({
           disabled={upDisabled}
           onClick={onUp}
         >
-          <ChevronUp size={18} aria-hidden="true" />
+          <Minus size={18} aria-hidden="true" />
         </button>
         <button
           type="button"
@@ -1997,7 +1997,7 @@ function PanelControls({
           disabled={downDisabled}
           onClick={onDown}
         >
-          <ChevronDown size={18} aria-hidden="true" />
+          <Plus size={18} aria-hidden="true" />
         </button>
       </div>
     </div>
