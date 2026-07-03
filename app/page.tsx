@@ -136,6 +136,8 @@ const relationStatuses: RelationStatus[] = [
   "nieznany"
 ];
 
+const actionStatuses: ActionStatus[] = ["nadchodzące", "wykonane"];
+
 const partnerTabs: { id: PartnerTab; label: string }[] = [
   { id: "general", label: "Informacje ogólne" },
   { id: "equipment", label: "Sprzęt" },
@@ -1133,24 +1135,25 @@ export default function Home() {
             downDisabled={panelLayout === "bottom-collapsed"}
             onUp={expandPartnersPanel}
             onDown={expandActionsPanel}
-          />
+          >
+            <div className={`partnerSegmentTabs ${openPartner ? "inactive" : ""}`} role="tablist" aria-label="Typy partnerów">
+              {partnerSegmentTabs.map((tab, index) => (
+                <button
+                  aria-selected={index === 0}
+                  className={index === 0 ? "active" : ""}
+                  disabled={Boolean(openPartner)}
+                  key={tab}
+                  role="tab"
+                  type="button"
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </PanelControls>
 
           {!isPartnersCollapsed ? (
-            <div className="partnersContent">
-              <div className="partnerSegmentTabs" role="tablist" aria-label="Typy partnerów">
-                {partnerSegmentTabs.map((tab, index) => (
-                  <button
-                    aria-selected={index === 0}
-                    className={index === 0 ? "active" : ""}
-                    key={tab}
-                    role="tab"
-                    type="button"
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
-
+            <div className={`partnersContent ${openPartner ? "isDetailsOpen" : ""}`}>
               {openPartner ? (
                 <PartnerDetails
                   actions={openPartnerActions}
@@ -1985,17 +1988,20 @@ function PanelControls({
   upDisabled,
   downDisabled,
   onUp,
-  onDown
+  onDown,
+  children
 }: {
   title: string;
   upDisabled: boolean;
   downDisabled: boolean;
   onUp: () => void;
   onDown: () => void;
+  children?: ReactNode;
 }) {
   return (
     <div className="panelHeader">
       <h1>{title}</h1>
+      <div className="panelHeaderMiddle">{children}</div>
       <div className="panelArrows">
         <button
           type="button"
@@ -2003,7 +2009,7 @@ function PanelControls({
           disabled={upDisabled}
           onClick={onUp}
         >
-          <Minus size={18} aria-hidden="true" />
+          <Plus size={18} aria-hidden="true" />
         </button>
         <button
           type="button"
@@ -2011,7 +2017,7 @@ function PanelControls({
           disabled={downDisabled}
           onClick={onDown}
         >
-          <Plus size={18} aria-hidden="true" />
+          <Minus size={18} aria-hidden="true" />
         </button>
       </div>
     </div>
@@ -2114,18 +2120,45 @@ function StatusButton({
   value: ActionStatus;
   onChange: (status: ActionStatus) => void;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <label className="statusSelect">
-      <CalendarDays size={16} aria-hidden="true" />
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value as ActionStatus)}
-      >
-        <option value="nadchodzące">Nadchodzące</option>
-        <option value="wykonane">Wykonane</option>
-      </select>
-      <ChevronDown size={18} aria-hidden="true" />
-    </label>
+    <div
+      className={`dropdownControl statusSelect ${isOpen ? "open" : ""}`}
+      onBlur={(event) => {
+        const nextFocus = event.relatedTarget as Node | null;
+
+        if (!nextFocus || !event.currentTarget.contains(nextFocus)) {
+          setIsOpen(false);
+        }
+      }}
+    >
+      <button className="dropdownButton" type="button" onClick={() => setIsOpen((current) => !current)}>
+        <CalendarDays size={16} aria-hidden="true" />
+        <span>{capitalize(value)}</span>
+        <ChevronDown size={18} aria-hidden="true" />
+      </button>
+      {isOpen ? (
+        <div className="dropdownMenu" role="listbox">
+          {actionStatuses.map((status) => (
+            <button
+              aria-selected={value === status}
+              className={value === status ? "selected" : ""}
+              key={status}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => {
+                onChange(status);
+                setIsOpen(false);
+              }}
+              role="option"
+              type="button"
+            >
+              {capitalize(status)}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -2136,24 +2169,52 @@ function RelationStatusSelect({
   value: RelationStatus;
   onChange: (status: RelationStatus) => void;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <label className="relationStatus">
-      <span
-        className={`statusDot ${getStatusTone(value)}`}
-        aria-hidden="true"
-      />
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value as RelationStatus)}
-      >
-        {relationStatuses.map((status) => (
-          <option key={status} value={status}>
-            {status}
-          </option>
-        ))}
-      </select>
-      <ChevronDown size={18} aria-hidden="true" />
-    </label>
+    <div
+      className={`dropdownControl relationStatus ${isOpen ? "open" : ""}`}
+      onBlur={(event) => {
+        const nextFocus = event.relatedTarget as Node | null;
+
+        if (!nextFocus || !event.currentTarget.contains(nextFocus)) {
+          setIsOpen(false);
+        }
+      }}
+    >
+      <button className="dropdownButton" type="button" onClick={() => setIsOpen((current) => !current)}>
+        <span
+          className={`statusDot ${getStatusTone(value)}`}
+          aria-hidden="true"
+        />
+        <span>{value}</span>
+        <ChevronDown size={18} aria-hidden="true" />
+      </button>
+      {isOpen ? (
+        <div className="dropdownMenu" role="listbox">
+          {relationStatuses.map((status) => (
+            <button
+              aria-selected={value === status}
+              className={value === status ? "selected" : ""}
+              key={status}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => {
+                onChange(status);
+                setIsOpen(false);
+              }}
+              role="option"
+              type="button"
+            >
+              <span
+                className={`statusDot ${getStatusTone(status)}`}
+                aria-hidden="true"
+              />
+              <span>{status}</span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
   );
 }
 

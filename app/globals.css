@@ -1817,6 +1817,22 @@ h2 {
   box-shadow: 0 0 0 2px rgba(20, 24, 32, 0.16);
 }
 
+.panelHeader {
+  display: grid;
+  grid-template-columns: minmax(170px, 1fr) auto minmax(90px, 1fr);
+}
+
+.panelHeaderMiddle {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.panelArrows {
+  justify-self: end;
+}
+
 .actionsPanel,
 .partnersPanel,
 .glassPanel {
@@ -1852,15 +1868,24 @@ h2 {
   padding: 14px 16px 16px;
 }
 
+.partnersContent.isDetailsOpen {
+  background: rgba(206, 218, 236, 0.72);
+}
+
 .partnerSegmentTabs {
   align-self: center;
   background: rgba(193, 205, 226, 0.5);
   display: grid;
   grid-template-columns: repeat(3, minmax(150px, 1fr));
-  margin: 0 0 12px;
+  margin: 0;
   min-height: 38px;
-  width: min(710px, 48vw);
+  width: min(710px, 44vw);
   z-index: 2;
+}
+
+.partnerSegmentTabs.inactive {
+  opacity: 0.1;
+  pointer-events: none;
 }
 
 .partnerSegmentTabs button {
@@ -1877,7 +1902,7 @@ h2 {
 }
 
 .panelToolbar {
-  top: 62px;
+  top: 12px;
 }
 
 .addPartnerButton {
@@ -1896,8 +1921,71 @@ h2 {
   color: rgba(20, 24, 32, 0.76);
 }
 
-.actionBody .statusSelect select,
-.nextAction .statusSelect select {
+.dropdownControl {
+  overflow: visible;
+  position: relative;
+  z-index: 3;
+}
+
+.dropdownControl.open {
+  z-index: 20;
+}
+
+.dropdownButton {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  display: flex;
+  gap: 10px;
+  height: 100%;
+  min-height: inherit;
+  padding: 0 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.dropdownButton > span:not(.statusDot) {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdownMenu {
+  background: #030303;
+  box-shadow: 0 12px 22px rgba(20, 24, 32, 0.16);
+  display: grid;
+  left: 0;
+  min-width: 100%;
+  padding: 4px;
+  position: absolute;
+  top: calc(100% + 2px);
+}
+
+.dropdownMenu button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: rgba(255, 255, 255, 0.74);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  min-height: 30px;
+  padding: 0 10px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.dropdownMenu button:hover,
+.dropdownMenu button.selected {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.actionBody .statusSelect,
+.nextAction .statusSelect {
   color: rgba(20, 24, 32, 0.76);
 }
 
@@ -1968,6 +2056,15 @@ h2 {
 .partnerDetailsActions {
   grid-template-columns: minmax(220px, 360px) minmax(220px, 360px);
   justify-content: center;
+}
+
+.partnersHeader,
+.partnerRow {
+  grid-template-columns: minmax(180px, 0.85fr) minmax(86px, 0.36fr) minmax(250px, 1.1fr) minmax(520px, 2.35fr) 54px;
+}
+
+.openPartnerButton {
+  justify-self: center;
 }
 
 @media (max-width: 1100px) {
