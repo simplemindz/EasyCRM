@@ -970,35 +970,6 @@ export default function Home() {
     );
   }
 
-  function addPartnerAccountItem(partnerId: string, listId: string) {
-    const item: PartnerAccountItem = {
-      id: crypto.randomUUID(),
-      account_number: "",
-      login: "",
-      password: ""
-    };
-
-    if (supabase) {
-      void supabase.from("partner_account_items").insert({
-        id: item.id,
-        list_id: listId,
-        account_number: item.account_number,
-        login: item.login,
-        password: item.password,
-        sort_order:
-          partnerLookup
-            .get(partnerId)
-            ?.accountLists.find((list) => list.id === listId)?.items.length ?? 0
-      });
-    }
-
-    updatePartnerAccountLists(partnerId, (lists) =>
-      lists.map((list) =>
-        list.id === listId ? { ...list, items: [...list.items, item] } : list
-      )
-    );
-  }
-
   function removePartnerAccountItem(
     partnerId: string,
     listId: string,
@@ -1113,8 +1084,8 @@ export default function Home() {
         <section className="glassPanel actionsPanel">
           <PanelControls
             title="Najbliższe działania"
-            upDisabled={Boolean(openPartner) || panelLayout === "top-collapsed"}
-            downDisabled={Boolean(openPartner) || panelLayout === "bottom-collapsed"}
+            upDisabled={Boolean(openPartner) || panelLayout === "bottom-collapsed"}
+            downDisabled={Boolean(openPartner) || panelLayout === "top-collapsed"}
             onGrow={growActionsPanel}
             onShrink={shrinkActionsPanel}
           />
@@ -1191,7 +1162,6 @@ export default function Home() {
                   onDelete={() => setDeleteTarget(openPartner)}
                   onEdit={() => openPartnerEditor("edit", openPartner)}
                   onTabChange={setPartnerTab}
-                  onAddAccountItem={addPartnerAccountItem}
                   onEditAccounts={() => openPartnerAccountsEditor(openPartner)}
                   onRemoveAccountItem={removePartnerAccountItem}
                   onUpdateAccountItem={updatePartnerAccountItem}
@@ -1692,7 +1662,6 @@ function PartnerDetails({
   onDelete,
   onEdit,
   onEditAccounts,
-  onAddAccountItem,
   onRemoveAccountItem,
   onUpdateAccountItem,
   updateActionStatus
@@ -1705,7 +1674,6 @@ function PartnerDetails({
   onDelete: () => void;
   onEdit: () => void;
   onEditAccounts: () => void;
-  onAddAccountItem: (partnerId: string, listId: string) => void;
   onRemoveAccountItem: (partnerId: string, listId: string, itemId: string) => void;
   onUpdateAccountItem: (
     partnerId: string,
@@ -1749,7 +1717,6 @@ function PartnerDetails({
         {activeTab === "equipment" ? <PartnerEquipmentTab /> : null}
         {activeTab === "accounts" ? (
           <PartnerAccountsTab
-            onAddAccountItem={onAddAccountItem}
             onEditAccounts={onEditAccounts}
             onRemoveAccountItem={onRemoveAccountItem}
             onUpdateAccountItem={onUpdateAccountItem}
@@ -1793,13 +1760,8 @@ function PartnerGeneralTab({ partner }: { partner: Partner }) {
             <strong>{contact.name}</strong>
             <small>{contact.email}</small>
             <small>{contact.phone}</small>
-            <button type="button">Edytuj</button>
-            <button className="dangerPill" type="button">Usuń</button>
           </div>
         ))}
-        <button className="addInlineButton" type="button">
-          + Dodaj osobę kontaktową
-        </button>
       </section>
     </div>
   );
@@ -1849,13 +1811,11 @@ function PartnerEquipmentTab() {
 
 function PartnerAccountsTab({
   partner,
-  onAddAccountItem,
   onEditAccounts,
   onRemoveAccountItem,
   onUpdateAccountItem
 }: {
   partner: Partner;
-  onAddAccountItem: (partnerId: string, listId: string) => void;
   onEditAccounts: () => void;
   onRemoveAccountItem: (partnerId: string, listId: string, itemId: string) => void;
   onUpdateAccountItem: (
@@ -1881,7 +1841,6 @@ function PartnerAccountsTab({
         <AccountPanel
           key={list.id}
           list={list}
-          onAdd={() => onAddAccountItem(partner.id, list.id)}
           onRemove={(itemId) => onRemoveAccountItem(partner.id, list.id, itemId)}
           onUpdate={(itemId, field, value) =>
             onUpdateAccountItem(partner.id, list.id, itemId, field, value)
@@ -1905,12 +1864,10 @@ function PartnerAccountsTab({
 
 function AccountPanel({
   list,
-  onAdd,
   onRemove,
   onUpdate
 }: {
   list: PartnerAccountList;
-  onAdd: () => void;
   onRemove: (itemId: string) => void;
   onUpdate: (
     itemId: string,
@@ -1954,9 +1911,6 @@ function AccountPanel({
           </button>
         </div>
       ))}
-      <button className="addInlineButton" type="button" onClick={onAdd}>
-        + Dodaj konto
-      </button>
     </section>
   );
 }
