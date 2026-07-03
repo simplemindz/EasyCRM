@@ -1888,6 +1888,10 @@ h2 {
   pointer-events: none;
 }
 
+.partnerSegmentTabs.hidden {
+  visibility: hidden;
+}
+
 .partnerSegmentTabs button {
   background: transparent;
   border: 0;
@@ -1927,6 +1931,11 @@ h2 {
   z-index: 3;
 }
 
+.dropdownControl.statusSelect,
+.dropdownControl.relationStatus {
+  overflow: visible;
+}
+
 .dropdownControl.open {
   z-index: 20;
 }
@@ -1940,7 +1949,7 @@ h2 {
   gap: 10px;
   height: 100%;
   min-height: inherit;
-  padding: 0 12px;
+  padding: 0 16px;
   text-align: left;
   width: 100%;
 }
@@ -1987,11 +1996,18 @@ h2 {
 .actionBody .statusSelect,
 .nextAction .statusSelect {
   color: rgba(20, 24, 32, 0.76);
+  flex: 0 0 170px;
+  min-width: 170px;
 }
 
 .partnerDetailsTop {
   grid-template-columns: minmax(240px, 0.75fr) minmax(520px, 1.1fr) 40px;
   margin-bottom: 14px;
+}
+
+.partnerTabs {
+  justify-self: center;
+  width: min(840px, 100%);
 }
 
 .partnerDetailsCollapse {
@@ -2053,6 +2069,11 @@ h2 {
   min-height: 38px;
 }
 
+.contactRow button {
+  font-size: 13px;
+  min-height: 28px;
+}
+
 .partnerDetailsActions {
   grid-template-columns: minmax(220px, 360px) minmax(220px, 360px);
   justify-content: center;
@@ -2060,11 +2081,37 @@ h2 {
 
 .partnersHeader,
 .partnerRow {
-  grid-template-columns: minmax(180px, 0.85fr) minmax(86px, 0.36fr) minmax(250px, 1.1fr) minmax(520px, 2.35fr) 54px;
+  grid-template-columns: minmax(180px, 0.85fr) minmax(86px, 0.36fr) minmax(270px, 1.08fr) minmax(500px, 2.22fr) 72px;
+}
+
+.partnerRow {
+  padding-right: 0;
 }
 
 .openPartnerButton {
   justify-self: center;
+}
+
+.detailsTableCard,
+.historyPanel,
+.accountPanel,
+.accountSettings {
+  align-content: start;
+}
+
+.detailsTableHeader {
+  color: rgba(20, 24, 32, 0.62);
+}
+
+.detailsTableRow,
+.accountRow,
+.accountHeader,
+.accountRow input {
+  color: rgba(20, 24, 32, 0.86);
+}
+
+.accountHeader {
+  background: transparent;
 }
 
 @media (max-width: 1100px) {

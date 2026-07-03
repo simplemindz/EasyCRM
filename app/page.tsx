@@ -653,7 +653,7 @@ export default function Home() {
     setModal("partner");
   }
 
-  function expandActionsPanel() {
+  function growActionsPanel() {
     if (openPartner) {
       return;
     }
@@ -667,13 +667,37 @@ export default function Home() {
     });
   }
 
-  function expandPartnersPanel() {
+  function shrinkActionsPanel() {
+    if (openPartner) {
+      return;
+    }
+
     setPanelLayout((current) => {
       if (current === "bottom-collapsed") {
         return "balanced";
       }
 
       return "top-collapsed";
+    });
+  }
+
+  function growPartnersPanel() {
+    setPanelLayout((current) => {
+      if (current === "bottom-collapsed") {
+        return "balanced";
+      }
+
+      return "top-collapsed";
+    });
+  }
+
+  function shrinkPartnersPanel() {
+    setPanelLayout((current) => {
+      if (current === "top-collapsed") {
+        return "balanced";
+      }
+
+      return "bottom-collapsed";
     });
   }
 
@@ -686,6 +710,11 @@ export default function Home() {
   function closePartnerDetails() {
     setOpenPartnerId("");
     setPartnerTab("general");
+  }
+
+  function openPartnerAccountsEditor(partner: Partner) {
+    openPartnerEditor("edit", partner);
+    setPartnerEditorTab("accounts");
   }
 
   async function handleAddPartner(event: FormEvent<HTMLFormElement>) {
@@ -1086,8 +1115,8 @@ export default function Home() {
             title="Najbliższe działania"
             upDisabled={Boolean(openPartner) || panelLayout === "top-collapsed"}
             downDisabled={Boolean(openPartner) || panelLayout === "bottom-collapsed"}
-            onUp={expandPartnersPanel}
-            onDown={expandActionsPanel}
+            onGrow={growActionsPanel}
+            onShrink={shrinkActionsPanel}
           />
 
           {!isActionsCollapsed ? (
@@ -1133,10 +1162,10 @@ export default function Home() {
             title="Partnerzy"
             upDisabled={panelLayout === "top-collapsed"}
             downDisabled={panelLayout === "bottom-collapsed"}
-            onUp={expandPartnersPanel}
-            onDown={expandActionsPanel}
+            onGrow={growPartnersPanel}
+            onShrink={shrinkPartnersPanel}
           >
-            <div className={`partnerSegmentTabs ${openPartner ? "inactive" : ""}`} role="tablist" aria-label="Typy partnerów">
+            <div className={`partnerSegmentTabs ${openPartner ? "inactive" : ""} ${isPartnersCollapsed ? "hidden" : ""}`} role="tablist" aria-label="Typy partnerów">
               {partnerSegmentTabs.map((tab, index) => (
                 <button
                   aria-selected={index === 0}
@@ -1163,6 +1192,7 @@ export default function Home() {
                   onEdit={() => openPartnerEditor("edit", openPartner)}
                   onTabChange={setPartnerTab}
                   onAddAccountItem={addPartnerAccountItem}
+                  onEditAccounts={() => openPartnerAccountsEditor(openPartner)}
                   onRemoveAccountItem={removePartnerAccountItem}
                   onUpdateAccountItem={updatePartnerAccountItem}
                   partner={openPartner}
@@ -1661,6 +1691,7 @@ function PartnerDetails({
   onCancel,
   onDelete,
   onEdit,
+  onEditAccounts,
   onAddAccountItem,
   onRemoveAccountItem,
   onUpdateAccountItem,
@@ -1673,6 +1704,7 @@ function PartnerDetails({
   onCancel: () => void;
   onDelete: () => void;
   onEdit: () => void;
+  onEditAccounts: () => void;
   onAddAccountItem: (partnerId: string, listId: string) => void;
   onRemoveAccountItem: (partnerId: string, listId: string, itemId: string) => void;
   onUpdateAccountItem: (
@@ -1718,6 +1750,7 @@ function PartnerDetails({
         {activeTab === "accounts" ? (
           <PartnerAccountsTab
             onAddAccountItem={onAddAccountItem}
+            onEditAccounts={onEditAccounts}
             onRemoveAccountItem={onRemoveAccountItem}
             onUpdateAccountItem={onUpdateAccountItem}
             partner={partner}
@@ -1817,11 +1850,13 @@ function PartnerEquipmentTab() {
 function PartnerAccountsTab({
   partner,
   onAddAccountItem,
+  onEditAccounts,
   onRemoveAccountItem,
   onUpdateAccountItem
 }: {
   partner: Partner;
   onAddAccountItem: (partnerId: string, listId: string) => void;
+  onEditAccounts: () => void;
   onRemoveAccountItem: (partnerId: string, listId: string, itemId: string) => void;
   onUpdateAccountItem: (
     partnerId: string,
@@ -1837,6 +1872,9 @@ function PartnerAccountsTab({
         <section className="accountPanel">
           <span>Listy kont</span>
           <p className="emptyState">Dodaj listę kont w edycji partnera.</p>
+          <button className="addInlineButton" type="button" onClick={onEditAccounts}>
+            + Dodaj listę kont
+          </button>
         </section>
       ) : null}
       {partner.accountLists.map((list) => (
@@ -1851,6 +1889,9 @@ function PartnerAccountsTab({
         />
       ))}
       <section className="accountSettings">
+        <button className="addInlineButton" type="button" onClick={onEditAccounts}>
+          + Dodaj listę kont
+        </button>
         {partner.accountFields.length === 0 ? (
           <p className="emptyState">Brak pojedynczych kont.</p>
         ) : null}
@@ -1987,15 +2028,15 @@ function PanelControls({
   title,
   upDisabled,
   downDisabled,
-  onUp,
-  onDown,
+  onGrow,
+  onShrink,
   children
 }: {
   title: string;
   upDisabled: boolean;
   downDisabled: boolean;
-  onUp: () => void;
-  onDown: () => void;
+  onGrow: () => void;
+  onShrink: () => void;
   children?: ReactNode;
 }) {
   return (
@@ -2005,19 +2046,19 @@ function PanelControls({
       <div className="panelArrows">
         <button
           type="button"
-          aria-label={`Powiększ panel ${title}`}
-          disabled={upDisabled}
-          onClick={onUp}
+          aria-label={`Zmniejsz panel ${title}`}
+          disabled={downDisabled}
+          onClick={onShrink}
         >
-          <Plus size={18} aria-hidden="true" />
+          <Minus size={18} aria-hidden="true" />
         </button>
         <button
           type="button"
-          aria-label={`Zmniejsz panel ${title}`}
-          disabled={downDisabled}
-          onClick={onDown}
+          aria-label={`Powiększ panel ${title}`}
+          disabled={upDisabled}
+          onClick={onGrow}
         >
-          <Minus size={18} aria-hidden="true" />
+          <Plus size={18} aria-hidden="true" />
         </button>
       </div>
     </div>
