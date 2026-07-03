@@ -1817,6 +1817,159 @@ h2 {
   box-shadow: 0 0 0 2px rgba(20, 24, 32, 0.16);
 }
 
+.actionsPanel,
+.partnersPanel,
+.glassPanel {
+  background: rgba(215, 225, 243, 0.88);
+}
+
+.relationsView.layout-top-collapsed {
+  grid-template-rows: 88px minmax(0, 1fr);
+}
+
+.relationsView.layout-bottom-collapsed {
+  grid-template-rows: minmax(0, 1fr) 88px;
+}
+
+.actionsContent {
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 34%);
+}
+
+.quickButton {
+  background: transparent;
+  border-left: 1px solid rgba(20, 24, 32, 0.1);
+  color: rgba(20, 24, 32, 0.34);
+}
+
+.quickButton:hover {
+  background: rgba(20, 24, 32, 0.04);
+}
+
+.partnersContent {
+  background: rgba(215, 225, 243, 0.88);
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px 16px;
+}
+
+.partnerSegmentTabs {
+  align-self: center;
+  background: rgba(193, 205, 226, 0.5);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
+  margin: 0 0 12px;
+  min-height: 38px;
+  width: min(710px, 48vw);
+  z-index: 2;
+}
+
+.partnerSegmentTabs button {
+  background: transparent;
+  border: 0;
+  color: rgba(20, 24, 32, 0.54);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.partnerSegmentTabs button.active {
+  background: #030303;
+  color: #ffffff;
+}
+
+.panelToolbar {
+  top: 62px;
+}
+
+.addPartnerButton {
+  background: transparent;
+  color: rgba(20, 24, 32, 0.54);
+}
+
+.addPartnerButton:hover {
+  background: rgba(20, 24, 32, 0.04);
+  color: #080b10;
+}
+
+.actionBody .statusSelect,
+.nextAction .statusSelect {
+  background: rgba(193, 205, 226, 0.72);
+  color: rgba(20, 24, 32, 0.76);
+}
+
+.actionBody .statusSelect select,
+.nextAction .statusSelect select {
+  color: rgba(20, 24, 32, 0.76);
+}
+
+.partnerDetailsTop {
+  grid-template-columns: minmax(240px, 0.75fr) minmax(520px, 1.1fr) 40px;
+  margin-bottom: 14px;
+}
+
+.partnerDetailsCollapse {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: #080b10;
+  display: flex;
+  height: 32px;
+  justify-content: center;
+  justify-self: end;
+  padding: 0;
+  width: 32px;
+}
+
+.partnerDetailsBody-general {
+  overflow: hidden;
+  padding-right: 0;
+}
+
+.generalGrid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.generalGrid .detailField {
+  border-left: 1px solid rgba(20, 24, 32, 0.28);
+  min-height: 54px;
+  padding-left: 18px;
+}
+
+.generalGrid .detailField:first-child,
+.generalGrid .detailField:nth-child(6) {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.generalGrid .detailField input {
+  background: transparent;
+  min-height: 22px;
+  padding: 0;
+}
+
+.generalGrid .detailArea {
+  grid-column: 1 / span 3;
+}
+
+.generalGrid .detailArea textarea {
+  min-height: clamp(180px, 33dvh, 340px);
+}
+
+.generalGrid .contactsCard {
+  grid-column: 4 / -1;
+  grid-row: 3;
+  min-height: clamp(180px, 33dvh, 340px);
+}
+
+.contactRow {
+  min-height: 38px;
+}
+
+.partnerDetailsActions {
+  grid-template-columns: minmax(220px, 360px) minmax(220px, 360px);
+  justify-content: center;
+}
+
 @media (max-width: 1100px) {
   .appShell {
     grid-template-columns: 94px minmax(0, 1fr);

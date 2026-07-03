@@ -5,7 +5,6 @@ import {
   CalendarDays,
   Check,
   ChevronDown,
-  ChevronRight,
   Handshake,
   Home as HomeIcon,
   Minus,
@@ -143,6 +142,8 @@ const partnerTabs: { id: PartnerTab; label: string }[] = [
   { id: "accounts", label: "Konta" },
   { id: "history", label: "Historia relacji" }
 ];
+
+const partnerSegmentTabs = ["Rozwojowi", "Klienci", "Dystrybutorzy"];
 
 const editablePartnerTabs: { id: Exclude<PartnerTab, "history">; label: string }[] = [
   { id: "general", label: "Informacje ogólne" },
@@ -1136,6 +1137,20 @@ export default function Home() {
 
           {!isPartnersCollapsed ? (
             <div className="partnersContent">
+              <div className="partnerSegmentTabs" role="tablist" aria-label="Typy partnerów">
+                {partnerSegmentTabs.map((tab, index) => (
+                  <button
+                    aria-selected={index === 0}
+                    className={index === 0 ? "active" : ""}
+                    key={tab}
+                    role="tab"
+                    type="button"
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
               {openPartner ? (
                 <PartnerDetails
                   actions={openPartnerActions}
@@ -1143,7 +1158,6 @@ export default function Home() {
                   onCancel={closePartnerDetails}
                   onDelete={() => setDeleteTarget(openPartner)}
                   onEdit={() => openPartnerEditor("edit", openPartner)}
-                  onSave={closePartnerDetails}
                   onTabChange={setPartnerTab}
                   onAddAccountItem={addPartnerAccountItem}
                   onRemoveAccountItem={removePartnerAccountItem}
@@ -1215,7 +1229,7 @@ export default function Home() {
                           aria-label={`Otwórz partnera ${partner.name}`}
                           onClick={() => openPartnerDetails(partner.id)}
                         >
-                          <ChevronRight size={22} aria-hidden="true" />
+                          <Plus size={22} aria-hidden="true" />
                         </button>
                       </article>
                     ))}
@@ -1644,7 +1658,6 @@ function PartnerDetails({
   onCancel,
   onDelete,
   onEdit,
-  onSave,
   onAddAccountItem,
   onRemoveAccountItem,
   onUpdateAccountItem,
@@ -1657,7 +1670,6 @@ function PartnerDetails({
   onCancel: () => void;
   onDelete: () => void;
   onEdit: () => void;
-  onSave: () => void;
   onAddAccountItem: (partnerId: string, listId: string) => void;
   onRemoveAccountItem: (partnerId: string, listId: string, itemId: string) => void;
   onUpdateAccountItem: (
@@ -1687,9 +1699,17 @@ function PartnerDetails({
             </button>
           ))}
         </div>
+        <button
+          aria-label="Zwiń szczegóły partnera"
+          className="partnerDetailsCollapse"
+          onClick={onCancel}
+          type="button"
+        >
+          <Minus size={22} aria-hidden="true" />
+        </button>
       </div>
 
-      <div className="partnerDetailsBody">
+      <div className={`partnerDetailsBody partnerDetailsBody-${activeTab}`}>
         {activeTab === "general" ? <PartnerGeneralTab partner={partner} /> : null}
         {activeTab === "equipment" ? <PartnerEquipmentTab /> : null}
         {activeTab === "accounts" ? (
@@ -1714,12 +1734,6 @@ function PartnerDetails({
           Usuń
         </button>
         <button type="button" onClick={onEdit}>Edytuj</button>
-        <button type="button" onClick={onCancel}>
-          Anuluj i wyjdź
-        </button>
-        <button className="primaryAction" type="button" onClick={onSave}>
-          Zapisz i wyjdź
-        </button>
       </div>
     </div>
   );
