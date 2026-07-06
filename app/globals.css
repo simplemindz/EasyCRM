@@ -97,6 +97,13 @@ button {
   gap: 16px;
 }
 
+.navButton {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+}
+
 .navItem.muted {
   color: rgba(20, 24, 32, 0.34);
 }
@@ -2336,6 +2343,241 @@ h2 {
 .equipmentAssignmentEditor label {
   display: grid;
   gap: 8px;
+}
+
+.equipmentView {
+  display: grid;
+  gap: 16px;
+  grid-template-rows: 190px minmax(0, 1fr);
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  padding: 22px 24px 22px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.equipmentHero {
+  align-items: center;
+  background: rgba(148, 162, 188, 0.44);
+  border: 0;
+  color: rgba(20, 24, 32, 0.9);
+  display: flex;
+  font-size: 20px;
+  font-weight: 400;
+  justify-content: center;
+}
+
+.equipmentPanel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 22px 26px 24px;
+}
+
+.equipmentPanelTop {
+  align-items: start;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(560px, 840px) minmax(220px, 1fr);
+}
+
+.equipmentPanelTop h1 {
+  color: rgba(20, 24, 32, 0.9);
+  font-size: 20px;
+}
+
+.equipmentStatusTabs {
+  background: rgba(193, 205, 226, 0.64);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  min-height: 44px;
+}
+
+.equipmentStatusTabs button {
+  background: transparent;
+  border: 0;
+  color: rgba(20, 24, 32, 0.46);
+  font-size: 12px;
+}
+
+.equipmentStatusTabs button.active {
+  background: #030303;
+  color: #ffffff;
+}
+
+.equipmentFilters {
+  align-items: center;
+  display: flex;
+  gap: 54px;
+  justify-content: flex-end;
+  padding: 46px 8px 14px;
+}
+
+.equipmentFilters .sortControl select {
+  background: rgba(20, 24, 32, 0.74);
+  color: rgba(255, 255, 255, 0.82);
+  min-width: 230px;
+}
+
+.equipmentRegistry {
+  display: grid;
+  gap: 10px;
+  min-height: 0;
+}
+
+.equipmentRegistryHeader,
+.equipmentRegistryRow {
+  align-items: center;
+  display: grid;
+  gap: 14px;
+}
+
+.equipmentRegistry-własny .equipmentRegistryHeader,
+.equipmentRegistry-własny .equipmentRegistryRow,
+.equipmentRegistry-nieoznaczony .equipmentRegistryHeader,
+.equipmentRegistry-nieoznaczony .equipmentRegistryRow {
+  grid-template-columns: 0.8fr 0.8fr 1fr 1.35fr minmax(310px, 0.8fr);
+}
+
+.equipmentRegistry-wypożyczony .equipmentRegistryHeader,
+.equipmentRegistry-wypożyczony .equipmentRegistryRow {
+  grid-template-columns: 0.7fr 0.7fr 0.9fr 1.1fr 1fr 1.2fr 1.1fr 1fr minmax(300px, 0.8fr);
+}
+
+.equipmentRegistry-wydany .equipmentRegistryHeader,
+.equipmentRegistry-wydany .equipmentRegistryRow {
+  grid-template-columns: 0.75fr 0.75fr 1fr 1.15fr 1fr 1.3fr 1.1fr minmax(220px, 0.7fr);
+}
+
+.equipmentRegistryHeader {
+  color: rgba(20, 24, 32, 0.62);
+  font-size: 9px;
+  padding: 0 18px;
+}
+
+.equipmentRegistryRows {
+  align-content: start;
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.equipmentRegistryRow {
+  background: rgba(193, 205, 226, 0.62);
+  color: rgba(20, 24, 32, 0.82);
+  font-size: 11px;
+  min-height: 50px;
+  padding: 0 12px 0 18px;
+}
+
+.equipmentRegistryRow strong {
+  color: #080b10;
+}
+
+.equipmentRegistryActions {
+  display: grid;
+  gap: 8px;
+  grid-auto-flow: column;
+  justify-content: end;
+}
+
+.equipmentRegistryActions button,
+.equipmentAvailableRow button,
+.equipmentAssignedRow button {
+  background: rgba(20, 24, 32, 0.72);
+  border: 0;
+  color: #ffffff;
+  font-size: 10px;
+  min-height: 36px;
+  min-width: 108px;
+  padding: 0 14px;
+}
+
+.partnerEquipmentSplit {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
+.equipmentRelationGrid {
+  display: grid;
+  flex: 1;
+  gap: 12px;
+  grid-template-columns: minmax(420px, 0.7fr) minmax(620px, 1.15fr);
+  min-height: 0;
+}
+
+.equipmentRelationPanel {
+  background: rgba(206, 218, 236, 0.54);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  padding: 20px 12px;
+}
+
+.equipmentRelationTitle {
+  color: rgba(20, 24, 32, 0.68);
+  font-size: 10px;
+  margin-bottom: 16px;
+}
+
+.equipmentAvailableHeader,
+.equipmentAvailableRow,
+.equipmentAssignedHeader,
+.equipmentAssignedRow {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+}
+
+.equipmentAvailableHeader,
+.equipmentAvailableRow {
+  grid-template-columns: 0.8fr 0.8fr 1fr 1.1fr 140px;
+}
+
+.equipmentAssignedHeader,
+.equipmentAssignedRow {
+  grid-template-columns: 0.65fr 0.6fr 0.85fr 0.95fr 0.9fr 1.05fr 0.95fr 1fr 86px;
+}
+
+.equipmentAvailableHeader,
+.equipmentAssignedHeader {
+  color: rgba(20, 24, 32, 0.62);
+  font-size: 9px;
+  min-height: 36px;
+  padding: 0 12px;
+}
+
+.equipmentRelationRows {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.equipmentAvailableRow,
+.equipmentAssignedRow {
+  background: rgba(193, 205, 226, 0.68);
+  color: rgba(20, 24, 32, 0.82);
+  font-size: 10px;
+  min-height: 50px;
+  padding: 0 12px;
+}
+
+.equipmentAssignedRow select,
+.equipmentAssignedRow input {
+  background: rgba(177, 190, 212, 0.86);
+  border: 0;
+  color: rgba(20, 24, 32, 0.86);
+  font-size: 10px;
+  min-height: 34px;
+  outline: 0;
+  padding: 0 10px;
+  width: 100%;
 }
 
 @media (max-width: 1100px) {

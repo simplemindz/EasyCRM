@@ -98,6 +98,8 @@ create table if not exists public.equipment (
   purchase_amount numeric(12, 2),
   purchase_currency text not null default 'PLN'
     check (purchase_currency in ('PLN', 'EUR', 'USD')),
+  status text not null default 'nieoznaczony'
+    check (status in ('własny', 'wypożyczony', 'wydany', 'nieoznaczony')),
   created_at timestamptz not null default now()
 );
 

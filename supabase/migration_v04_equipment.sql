@@ -21,8 +21,26 @@ create table if not exists public.equipment (
   purchase_amount numeric(12, 2),
   purchase_currency text not null default 'PLN'
     check (purchase_currency in ('PLN', 'EUR', 'USD')),
+  status text not null default 'nieoznaczony'
+    check (status in ('własny', 'wypożyczony', 'wydany', 'nieoznaczony')),
   created_at timestamptz not null default now()
 );
+
+alter table public.equipment
+  add column if not exists status text not null default 'nieoznaczony';
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'equipment_status_check'
+  ) then
+    alter table public.equipment
+      add constraint equipment_status_check
+      check (status in ('własny', 'wypożyczony', 'wydany', 'nieoznaczony'));
+  end if;
+end $$;
 
 create table if not exists public.partner_equipment_assignments (
   id uuid primary key default gen_random_uuid(),

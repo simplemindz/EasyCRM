@@ -5,6 +5,7 @@ import {
   CalendarDays,
   Check,
   ChevronDown,
+  Monitor,
   Handshake,
   Home as HomeIcon,
   Minus,
@@ -23,6 +24,7 @@ type RelationStatus =
 
 type ActionStatus = "nadchodzące" | "wykonane";
 type PartnerSort = "next" | "name";
+type AppView = "relations" | "equipment";
 type PanelLayout = "top-collapsed" | "balanced" | "bottom-collapsed";
 type PartnerTab = "general" | "equipment" | "accounts" | "history";
 type PartnerEditorMode = "create" | "edit";
@@ -40,6 +42,9 @@ type EquipmentType =
   | "akcesorium komputerowe"
   | "inne";
 type EquipmentRelation = "wypożyczenie" | "wydanie";
+type EquipmentStatus = "własny" | "wypożyczony" | "wydany" | "nieoznaczony";
+type EquipmentStatusTab = EquipmentStatus;
+type EquipmentSort = "alphabetical" | "internal_id";
 type Currency = "PLN" | "EUR" | "USD";
 
 type Partner = {
@@ -139,6 +144,7 @@ type Equipment = {
   purchase_date: string;
   purchase_amount: string;
   purchase_currency: Currency;
+  status: EquipmentStatus;
   created_at?: string;
 };
 
@@ -197,6 +203,12 @@ const equipmentTypes: EquipmentType[] = [
   "inne"
 ];
 const equipmentRelations: EquipmentRelation[] = ["wypożyczenie", "wydanie"];
+const equipmentStatusTabs: { id: EquipmentStatusTab; label: string }[] = [
+  { id: "własny", label: "Własny" },
+  { id: "wypożyczony", label: "Wypożyczony" },
+  { id: "wydany", label: "Wydany" },
+  { id: "nieoznaczony", label: "Nieoznaczony" }
+];
 const currencies: Currency[] = ["PLN", "EUR", "USD"];
 
 const partnerTabs: { id: PartnerTab; label: string }[] = [
@@ -398,7 +410,8 @@ const demoEquipment: Equipment[] = [
     serial_number: "234234234234",
     purchase_date: "2026-01-12",
     purchase_amount: "1200",
-    purchase_currency: "PLN"
+    purchase_currency: "PLN",
+    status: "nieoznaczony"
   },
   {
     id: "demo-equipment-2",
@@ -408,7 +421,8 @@ const demoEquipment: Equipment[] = [
     serial_number: "dsfsdfsdfdsfsdf",
     purchase_date: "2026-01-12",
     purchase_amount: "1200",
-    purchase_currency: "PLN"
+    purchase_currency: "PLN",
+    status: "nieoznaczony"
   },
   {
     id: "demo-equipment-3",
@@ -418,7 +432,8 @@ const demoEquipment: Equipment[] = [
     serial_number: "KOM-234",
     purchase_date: "2026-02-02",
     purchase_amount: "3400",
-    purchase_currency: "PLN"
+    purchase_currency: "PLN",
+    status: "własny"
   }
 ];
 
@@ -613,7 +628,8 @@ function normalizeEquipment(equipment: Equipment): Equipment {
     purchase_date: equipment.purchase_date ?? "",
     purchase_amount:
       equipment.purchase_amount == null ? "" : String(equipment.purchase_amount),
-    purchase_currency: equipment.purchase_currency ?? "PLN"
+    purchase_currency: equipment.purchase_currency ?? "PLN",
+    status: equipment.status ?? "nieoznaczony"
   };
 }
 
@@ -668,8 +684,13 @@ function createEquipment(draft: EquipmentDraft, equipment: Equipment[]): Equipme
   return {
     ...draft,
     id: crypto.randomUUID(),
-    internal_id: generateEquipmentInternalId(draft.equipment_type, equipment)
+    internal_id: generateEquipmentInternalId(draft.equipment_type, equipment),
+    status: "nieoznaczony"
   };
+}
+
+function getEquipmentStatusForAssignment(relation: EquipmentRelation): EquipmentStatus {
+  return relation === "wydanie" ? "wydany" : "wypożyczony";
 }
 
 function getPartnerGuardians(partner: Partner) {
@@ -699,11 +720,19 @@ export default function Home() {
     useState<Exclude<PartnerTab, "history">>("general");
   const [actionDraft, setActionDraft] = useState<ActionDraft>(emptyActionDraft);
   const [equipmentDraft, setEquipmentDraft] = useState<EquipmentDraft>(emptyEquipmentDraft);
+  const [editingEquipmentId, setEditingEquipmentId] = useState("");
   const [equipmentAssignmentDraft, setEquipmentAssignmentDraft] =
     useState<EquipmentAssignmentDraft>(emptyEquipmentAssignmentDraft);
   const [equipmentAssignmentPartnerId, setEquipmentAssignmentPartnerId] = useState("");
   const [actionRelationStatus, setActionRelationStatus] =
     useState<RelationStatus>("nieznany");
+  const [activeView, setActiveView] = useState<AppView>("relations");
+  const [equipmentStatusTab, setEquipmentStatusTab] =
+    useState<EquipmentStatusTab>("wypożyczony");
+  const [equipmentSort, setEquipmentSort] = useState<EquipmentSort>("alphabetical");
+  const [equipmentCategory, setEquipmentCategory] = useState<EquipmentType | "wszystkie">(
+    "wszystkie"
+  );
   const [partnerSort, setPartnerSort] = useState<PartnerSort>("next");
   const [panelLayout, setPanelLayout] = useState<PanelLayout>("balanced");
   const [openPartnerId, setOpenPartnerId] = useState("");
@@ -876,6 +905,30 @@ export default function Home() {
   const openPartnerActions = openPartner
     ? sortedActions.filter((action) => action.partner_id === openPartner.id)
     : [];
+  const activeAssignments = equipmentAssignments.filter(
+    (assignment) => !assignment.returned_at
+  );
+  const assignmentLookup = useMemo(() => {
+    const lookup = new Map<string, PartnerEquipmentAssignment>();
+
+    activeAssignments.forEach((assignment) => {
+      lookup.set(assignment.equipment_id, assignment);
+    });
+
+    return lookup;
+  }, [activeAssignments]);
+  const filteredEquipment = equipment
+    .filter((item) => item.status === equipmentStatusTab)
+    .filter((item) =>
+      equipmentCategory === "wszystkie" ? true : item.equipment_type === equipmentCategory
+    )
+    .sort((first, second) => {
+      if (equipmentSort === "internal_id") {
+        return first.internal_id.localeCompare(second.internal_id, "pl");
+      }
+
+      return first.name.localeCompare(second.name, "pl");
+    });
 
   function openActionModal(partnerId = "") {
     const selectedPartnerId = partnerId || partners[0]?.id || "";
@@ -962,8 +1015,20 @@ export default function Home() {
     setPartnerEditorTab("accounts");
   }
 
-  function openEquipmentModal() {
-    setEquipmentDraft(emptyEquipmentDraft);
+  function openEquipmentModal(item?: Equipment) {
+    setEditingEquipmentId(item?.id ?? "");
+    setEquipmentDraft(
+      item
+        ? {
+            equipment_type: item.equipment_type,
+            name: item.name,
+            serial_number: item.serial_number,
+            purchase_date: item.purchase_date,
+            purchase_amount: item.purchase_amount,
+            purchase_currency: item.purchase_currency
+          }
+        : emptyEquipmentDraft
+    );
     setModal("equipment");
   }
 
@@ -1121,27 +1186,59 @@ export default function Home() {
     const nextEquipment = createEquipment(equipmentDraft, equipment);
 
     if (supabase) {
-      const { data, error } = await supabase
-        .from("equipment")
-        .insert({
-          ...nextEquipment,
-          purchase_date: nextEquipment.purchase_date || null,
-          purchase_amount: nextEquipment.purchase_amount || null
-        })
-        .select()
-        .single();
+      const payload = {
+        equipment_type: equipmentDraft.equipment_type,
+        name: equipmentDraft.name,
+        serial_number: equipmentDraft.serial_number,
+        purchase_date: equipmentDraft.purchase_date || null,
+        purchase_amount: equipmentDraft.purchase_amount || null,
+        purchase_currency: equipmentDraft.purchase_currency
+      };
+      const request = editingEquipmentId
+        ? supabase
+            .from("equipment")
+            .update(payload)
+            .eq("id", editingEquipmentId)
+            .select()
+            .single()
+        : supabase
+            .from("equipment")
+            .insert({
+              ...nextEquipment,
+              purchase_date: nextEquipment.purchase_date || null,
+              purchase_amount: nextEquipment.purchase_amount || null,
+              status: nextEquipment.status
+            })
+            .select()
+            .single();
+      const { data, error } = await request;
 
       if (error) {
         setErrorMessage(error.message);
         return;
       }
 
-      setEquipment((current) => [...current, normalizeEquipment(data)]);
+      setEquipment((current) =>
+        editingEquipmentId
+          ? current.map((item) =>
+              item.id === editingEquipmentId ? normalizeEquipment(data) : item
+            )
+          : [...current, normalizeEquipment(data)]
+      );
     } else {
-      setEquipment((current) => [...current, nextEquipment]);
+      setEquipment((current) =>
+        editingEquipmentId
+          ? current.map((item) =>
+              item.id === editingEquipmentId
+                ? { ...item, ...equipmentDraft }
+                : item
+            )
+          : [...current, nextEquipment]
+      );
     }
 
     setEquipmentDraft(emptyEquipmentDraft);
+    setEditingEquipmentId("");
     setModal(null);
   }
 
@@ -1190,6 +1287,11 @@ export default function Home() {
     } else {
       setEquipmentAssignments((current) => [...current, assignment]);
     }
+
+    await updateEquipmentStatus(
+      assignment.equipment_id,
+      getEquipmentStatusForAssignment(assignment.relation)
+    );
 
     setEquipmentAssignmentDraft(emptyEquipmentAssignmentDraft);
     setEquipmentAssignmentPartnerId("");
@@ -1375,6 +1477,7 @@ export default function Home() {
             ? value
             : assignment.boundary_date
     };
+    const nextStatus = getEquipmentStatusForAssignment(nextAssignment.relation);
 
     if (supabase) {
       const { error } = await supabase
@@ -1403,6 +1506,10 @@ export default function Home() {
           : item
       )
     );
+
+    if (field === "relation") {
+      await updateEquipmentStatus(assignment.equipment_id, nextStatus);
+    }
   }
 
   async function returnEquipmentAssignment(assignment: PartnerEquipmentAssignment) {
@@ -1425,6 +1532,71 @@ export default function Home() {
         item.id === assignment.id ? { ...item, returned_at } : item
       )
     );
+    await updateEquipmentStatus(assignment.equipment_id, "nieoznaczony");
+  }
+
+  async function updateEquipmentStatus(
+    equipmentId: string,
+    status: EquipmentStatus
+  ) {
+    if (supabase) {
+      const { error } = await supabase
+        .from("equipment")
+        .update({ status })
+        .eq("id", equipmentId);
+
+      if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
+    }
+
+    setEquipment((current) =>
+      current.map((item) => (item.id === equipmentId ? { ...item, status } : item))
+    );
+  }
+
+  async function assignEquipmentToPartner(
+    partner: Partner,
+    item: Equipment,
+    relation: EquipmentRelation = "wypożyczenie"
+  ) {
+    const assignment: PartnerEquipmentAssignment = {
+      id: crypto.randomUUID(),
+      partner_id: partner.id,
+      equipment_id: item.id,
+      guardian_name: getPartnerGuardians(partner)[0] ?? "",
+      relation,
+      boundary_date: "",
+      assigned_at: new Date().toISOString().slice(0, 10),
+      returned_at: ""
+    };
+
+    if (supabase) {
+      const { data, error } = await supabase
+        .from("partner_equipment_assignments")
+        .insert({
+          ...assignment,
+          boundary_date: null,
+          returned_at: null
+        })
+        .select()
+        .single();
+
+      if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
+
+      setEquipmentAssignments((current) => [
+        ...current,
+        normalizeEquipmentAssignment(data)
+      ]);
+    } else {
+      setEquipmentAssignments((current) => [...current, assignment]);
+    }
+
+    await updateEquipmentStatus(item.id, getEquipmentStatusForAssignment(relation));
   }
 
   async function confirmDeletePartner() {
@@ -1472,10 +1644,22 @@ export default function Home() {
             <HomeIcon size={24} aria-hidden="true" />
             Home
           </span>
-          <span className="navItem active">
+          <button
+            className={`navItem navButton ${activeView === "relations" ? "active" : "muted"}`}
+            type="button"
+            onClick={() => setActiveView("relations")}
+          >
             <Handshake size={24} aria-hidden="true" />
             Relacje
-          </span>
+          </button>
+          <button
+            className={`navItem navButton ${activeView === "equipment" ? "active" : "muted"}`}
+            type="button"
+            onClick={() => setActiveView("equipment")}
+          >
+            <Monitor size={24} aria-hidden="true" />
+            Sprzęt
+          </button>
           <span className="navItem muted">
             <Settings size={24} aria-hidden="true" />
             Ustawienia
@@ -1489,6 +1673,7 @@ export default function Home() {
         </div>
       </aside>
 
+      {activeView === "relations" ? (
       <section className={`relationsView layout-${panelLayout}`}>
         {errorMessage ? (
           <div className="notice">
@@ -1583,6 +1768,7 @@ export default function Home() {
                   onEditAccounts={() => openPartnerAccountsEditor(openPartner)}
                   onOpenEquipmentModal={openEquipmentModal}
                   onOpenAssignEquipment={() => openAssignEquipmentModal(openPartner)}
+                  onAssignEquipment={assignEquipmentToPartner}
                   onReturnEquipmentAssignment={returnEquipmentAssignment}
                   onRemoveAccountItem={removePartnerAccountItem}
                   onUpdateEquipmentAssignment={updateEquipmentAssignment}
@@ -1675,6 +1861,38 @@ export default function Home() {
           ) : null}
         </section>
       </section>
+      ) : (
+        <EquipmentView
+          activeTab={equipmentStatusTab}
+          assignmentLookup={assignmentLookup}
+          category={equipmentCategory}
+          equipment={filteredEquipment}
+          onCategoryChange={setEquipmentCategory}
+          onCreateEquipment={openEquipmentModal}
+          onEditEquipment={openEquipmentModal}
+          onDeleteEquipment={async (item) => {
+            if (supabase) {
+              const { error } = await supabase.from("equipment").delete().eq("id", item.id);
+
+              if (error) {
+                setErrorMessage(error.message);
+                return;
+              }
+            }
+
+            setEquipment((current) => current.filter((entry) => entry.id !== item.id));
+            setEquipmentAssignments((current) =>
+              current.filter((assignment) => assignment.equipment_id !== item.id)
+            );
+          }}
+          onReturnEquipment={returnEquipmentAssignment}
+          onStatusTabChange={setEquipmentStatusTab}
+          onUpdateStatus={updateEquipmentStatus}
+          partners={partners}
+          sort={equipmentSort}
+          onSortChange={setEquipmentSort}
+        />
+      )}
 
       {modal === "partner" ? (
         <PartnerEditorModal
@@ -1780,9 +1998,12 @@ export default function Home() {
           equipment={equipment}
           onCancel={() => {
             setEquipmentDraft(emptyEquipmentDraft);
+            setEditingEquipmentId("");
             setModal(null);
           }}
           onChange={setEquipmentDraft}
+          internalId={equipment.find((item) => item.id === editingEquipmentId)?.internal_id}
+          isEditing={Boolean(editingEquipmentId)}
           onSubmit={handleAddEquipment}
         />
       ) : null}
@@ -1813,6 +2034,176 @@ export default function Home() {
         />
       ) : null}
     </main>
+  );
+}
+
+function EquipmentView({
+  activeTab,
+  assignmentLookup,
+  category,
+  equipment,
+  partners,
+  sort,
+  onCategoryChange,
+  onCreateEquipment,
+  onEditEquipment,
+  onDeleteEquipment,
+  onReturnEquipment,
+  onSortChange,
+  onStatusTabChange,
+  onUpdateStatus
+}: {
+  activeTab: EquipmentStatusTab;
+  assignmentLookup: Map<string, PartnerEquipmentAssignment>;
+  category: EquipmentType | "wszystkie";
+  equipment: Equipment[];
+  partners: Partner[];
+  sort: EquipmentSort;
+  onCategoryChange: (category: EquipmentType | "wszystkie") => void;
+  onCreateEquipment: () => void;
+  onEditEquipment: (item: Equipment) => void;
+  onDeleteEquipment: (item: Equipment) => void;
+  onReturnEquipment: (assignment: PartnerEquipmentAssignment) => void;
+  onSortChange: (sort: EquipmentSort) => void;
+  onStatusTabChange: (status: EquipmentStatusTab) => void;
+  onUpdateStatus: (equipmentId: string, status: EquipmentStatus) => void;
+}) {
+  const partnerLookup = new Map(partners.map((partner) => [partner.id, partner]));
+
+  return (
+    <section className="equipmentView">
+      <button className="equipmentHero" type="button" onClick={onCreateEquipment}>
+        Dodaj nowy sprzęt
+      </button>
+
+      <section className="glassPanel equipmentPanel">
+        <div className="equipmentPanelTop">
+          <h1>Sprzęt</h1>
+          <div className="equipmentStatusTabs" role="tablist" aria-label="Status sprzętu">
+            {equipmentStatusTabs.map((tab) => (
+              <button
+                aria-selected={activeTab === tab.id}
+                className={activeTab === tab.id ? "active" : ""}
+                key={tab.id}
+                onClick={() => onStatusTabChange(tab.id)}
+                role="tab"
+                type="button"
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="equipmentFilters">
+          <label className="sortControl">
+            <span>Kategoria</span>
+            <select
+              value={category}
+              onChange={(event) =>
+                onCategoryChange(event.target.value as EquipmentType | "wszystkie")
+              }
+            >
+              <option value="wszystkie">Wszystkie</option>
+              {equipmentTypes.map((type) => (
+                <option key={type} value={type}>
+                  {capitalize(type)}
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={20} aria-hidden="true" />
+          </label>
+          <label className="sortControl">
+            <span>Sortuj po:</span>
+            <select
+              value={sort}
+              onChange={(event) => onSortChange(event.target.value as EquipmentSort)}
+            >
+              <option value="alphabetical">Alfabetycznie</option>
+              <option value="internal_id">Nr wewnętrzny</option>
+            </select>
+            <ChevronDown size={20} aria-hidden="true" />
+          </label>
+        </div>
+
+        <div className={`equipmentRegistry equipmentRegistry-${activeTab}`}>
+          <div className="equipmentRegistryHeader">
+            <span>Nr wewnętrzny</span>
+            <span>Typ</span>
+            <span>Model</span>
+            <span>Nr seryjny</span>
+            {activeTab === "wypożyczony" ? (
+              <>
+                <span>Data wypożyczenia</span>
+                <span>Użytkujący</span>
+                <span>Opiekun</span>
+                <span>Data graniczna</span>
+              </>
+            ) : null}
+            {activeTab === "wydany" ? (
+              <>
+                <span>Data wydania</span>
+                <span>Klient</span>
+                <span>Opiekun</span>
+              </>
+            ) : null}
+            <span />
+          </div>
+
+          <div className="equipmentRegistryRows">
+            {equipment.length === 0 ? (
+              <p className="emptyState">Brak urządzeń w tej zakładce.</p>
+            ) : null}
+            {equipment.map((item) => {
+              const assignment = assignmentLookup.get(item.id);
+              const partner = assignment ? partnerLookup.get(assignment.partner_id) : null;
+
+              return (
+                <div className="equipmentRegistryRow" key={item.id}>
+                  <strong>{item.internal_id}</strong>
+                  <span>{capitalize(item.equipment_type)}</span>
+                  <span>{item.name}</span>
+                  <span>{item.serial_number}</span>
+                  {activeTab === "wypożyczony" ? (
+                    <>
+                      <span>{formatDate(assignment?.assigned_at ?? "")}</span>
+                      <span>{partner?.name ?? ""}</span>
+                      <span>{assignment?.guardian_name ?? ""}</span>
+                      <span>{formatDate(assignment?.boundary_date ?? "")}</span>
+                    </>
+                  ) : null}
+                  {activeTab === "wydany" ? (
+                    <>
+                      <span>{formatDate(assignment?.assigned_at ?? "")}</span>
+                      <span>{partner?.name ?? ""}</span>
+                      <span>{assignment?.guardian_name ?? ""}</span>
+                    </>
+                  ) : null}
+                  <div className="equipmentRegistryActions">
+                    {activeTab === "wypożyczony" && assignment ? (
+                      <button type="button" onClick={() => onReturnEquipment(assignment)}>
+                        Zwróć
+                      </button>
+                    ) : null}
+                    {activeTab === "nieoznaczony" ? (
+                      <button type="button" onClick={() => onUpdateStatus(item.id, "własny")}>
+                        Oznacz jako własny
+                      </button>
+                    ) : null}
+                    <button type="button" onClick={() => onEditEquipment(item)}>
+                      Edytuj
+                    </button>
+                    <button className="dangerPill" type="button" onClick={() => onDeleteEquipment(item)}>
+                      Usuń
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    </section>
   );
 }
 
@@ -2115,12 +2506,16 @@ function EditorSelect({
 function EquipmentModal({
   draft,
   equipment,
+  internalId,
+  isEditing,
   onChange,
   onCancel,
   onSubmit
 }: {
   draft: EquipmentDraft;
   equipment: Equipment[];
+  internalId?: string;
+  isEditing: boolean;
   onChange: (draft: EquipmentDraft) => void;
   onCancel: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -2133,11 +2528,13 @@ function EquipmentModal({
     <div className="modalBackdrop" role="dialog" aria-modal="true">
       <section className="modalPanel equipmentCreatePanel">
         <form className="equipmentCreateForm" onSubmit={onSubmit}>
-          <h2>Dodaj nowe urządzenie</h2>
+          <h2>{isEditing ? "Edytuj urządzenie" : "Dodaj nowe urządzenie"}</h2>
           <div className="equipmentCreateGrid">
             <label className="equipmentGeneratedId">
               <span>Nr wewnętrzny:</span>
-              <strong>{generateEquipmentInternalId(draft.equipment_type, equipment)}</strong>
+              <strong>
+                {isEditing ? internalId : generateEquipmentInternalId(draft.equipment_type, equipment)}
+              </strong>
             </label>
             <label className="field">
               <span>Typ</span>
@@ -2408,6 +2805,7 @@ function PartnerDetails({
   onEditAccounts,
   onOpenEquipmentModal,
   onOpenAssignEquipment,
+  onAssignEquipment,
   onReturnEquipmentAssignment,
   onRemoveAccountItem,
   onUpdateEquipmentAssignment,
@@ -2426,6 +2824,7 @@ function PartnerDetails({
   onEditAccounts: () => void;
   onOpenEquipmentModal: () => void;
   onOpenAssignEquipment: () => void;
+  onAssignEquipment: (partner: Partner, item: Equipment) => void;
   onReturnEquipmentAssignment: (assignment: PartnerEquipmentAssignment) => void;
   onRemoveAccountItem: (partnerId: string, listId: string, itemId: string) => void;
   onUpdateEquipmentAssignment: (
@@ -2480,6 +2879,7 @@ function PartnerDetails({
             assignments={equipmentAssignments}
             equipment={equipment}
             onAssign={onOpenAssignEquipment}
+            onAssignEquipment={onAssignEquipment}
             onCreateEquipment={onOpenEquipmentModal}
             onReturn={onReturnEquipmentAssignment}
             onUpdateAssignment={onUpdateEquipmentAssignment}
@@ -2543,6 +2943,7 @@ function PartnerEquipmentTab({
   equipment,
   assignments,
   onAssign,
+  onAssignEquipment,
   onCreateEquipment,
   onReturn,
   onUpdateAssignment
@@ -2551,6 +2952,7 @@ function PartnerEquipmentTab({
   equipment: Equipment[];
   assignments: PartnerEquipmentAssignment[];
   onAssign: () => void;
+  onAssignEquipment: (partner: Partner, item: Equipment) => void;
   onCreateEquipment: () => void;
   onReturn: (assignment: PartnerEquipmentAssignment) => void;
   onUpdateAssignment: (
@@ -2566,96 +2968,131 @@ function PartnerEquipmentTab({
   const activeAssignments = assignments.filter(
     (assignment) => assignment.partner_id === partner.id && !assignment.returned_at
   );
+  const assignedEquipmentIds = new Set(
+    assignments
+      .filter((assignment) => !assignment.returned_at)
+      .map((assignment) => assignment.equipment_id)
+  );
+  const availableEquipment = equipment.filter(
+    (item) => item.status === "nieoznaczony" && !assignedEquipmentIds.has(item.id)
+  );
 
   return (
-    <section className="detailsTableCard partnerEquipmentCard">
+    <section className="partnerEquipmentSplit">
       <div className="equipmentCardHeader">
-        <span>Ewidencja sprzętu</span>
+        <span>Dostępne urządzenia</span>
         <div>
           <button className="addInlineButton" type="button" onClick={onCreateEquipment}>
             + Dodaj nowe urządzenie
           </button>
-          <button className="addInlineButton" type="button" onClick={onAssign}>
-            + Przypisz urządzenie
-          </button>
         </div>
       </div>
-      <div className="equipmentTable partnerEquipmentTable">
-        <div className="detailsTableHeader">
-          <span>Nr wewnętrzny</span>
-          <span>Typ</span>
-          <span>Nazwa sprzętu</span>
-          <span>Nr seryjny</span>
-          <span>Opiekun</span>
-          <span>Relacja</span>
-          <span>Data graniczna</span>
-          <span />
-        </div>
-        {activeAssignments.length === 0 ? (
-          <p className="emptyState">Brak przypisanego sprzętu.</p>
-        ) : null}
-        {activeAssignments.map((assignment) => {
-          const item = equipment.find((entry) => entry.id === assignment.equipment_id);
-
-          if (!item) {
-            return null;
-          }
-
-          return (
-            <div className="detailsTableRow" key={assignment.id}>
-              <span>{item.internal_id}</span>
-              <span>{capitalize(item.equipment_type)}</span>
-              <span>{item.name}</span>
-              <span>{item.serial_number}</span>
-              <select
-                aria-label="Opiekun sprzętu"
-                value={assignment.guardian_name}
-                onChange={(event) =>
-                  onUpdateAssignment(assignment, "guardian_name", event.target.value)
-                }
-              >
-                <option value="">Brak opiekuna</option>
-                {guardians.map((guardian) => (
-                  <option key={guardian} value={guardian}>
-                    {guardian}
-                  </option>
-                ))}
-              </select>
-              <select
-                aria-label="Relacja sprzętu"
-                value={assignment.relation}
-                onChange={(event) =>
-                  onUpdateAssignment(
-                    assignment,
-                    "relation",
-                    event.target.value as EquipmentRelation
-                  )
-                }
-              >
-                {equipmentRelations.map((relation) => (
-                  <option key={relation} value={relation}>
-                    {capitalize(relation)}
-                  </option>
-                ))}
-              </select>
-              <input
-                aria-label="Data graniczna"
-                disabled={assignment.relation !== "wypożyczenie"}
-                type="date"
-                value={assignment.boundary_date}
-                onChange={(event) =>
-                  onUpdateAssignment(assignment, "boundary_date", event.target.value)
-                }
-              />
-              <span className="rowActions">
-                <button className="dangerPill" type="button" onClick={() => onReturn(assignment)}>
-                  Zwróć
+      <section className="equipmentRelationGrid">
+        <div className="equipmentRelationPanel">
+          <div className="equipmentAvailableHeader">
+            <span>Nr wewnętrzny</span>
+            <span>Typ</span>
+            <span>Model</span>
+            <span>Nr seryjny</span>
+            <span />
+          </div>
+          <div className="equipmentRelationRows">
+            {availableEquipment.length === 0 ? (
+              <p className="emptyState">Brak nieoznaczonych urządzeń.</p>
+            ) : null}
+            {availableEquipment.map((item) => (
+              <div className="equipmentAvailableRow" key={item.id}>
+                <span>{item.internal_id}</span>
+                <span>{capitalize(item.equipment_type)}</span>
+                <span>{item.name}</span>
+                <span>{item.serial_number}</span>
+                <button type="button" onClick={() => onAssignEquipment(partner, item)}>
+                  Przypisz
                 </button>
-              </span>
-            </div>
-          );
-        })}
-      </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="equipmentRelationPanel">
+          <span className="equipmentRelationTitle">Przypisane urządzenia</span>
+          <div className="equipmentAssignedHeader">
+            <span>Nr wewnętrzny</span>
+            <span>Typ</span>
+            <span>Model</span>
+            <span>Nr seryjny</span>
+            <span>Data przypisania</span>
+            <span>Opiekun</span>
+            <span>Relacja</span>
+            <span>Data graniczna</span>
+            <span />
+          </div>
+          <div className="equipmentRelationRows">
+            {activeAssignments.length === 0 ? (
+              <p className="emptyState">Brak przypisanego sprzętu.</p>
+            ) : null}
+            {activeAssignments.map((assignment) => {
+              const item = equipment.find((entry) => entry.id === assignment.equipment_id);
+
+              if (!item) {
+                return null;
+              }
+
+              return (
+                <div className="equipmentAssignedRow" key={assignment.id}>
+                  <span>{item.internal_id}</span>
+                  <span>{capitalize(item.equipment_type)}</span>
+                  <span>{item.name}</span>
+                  <span>{item.serial_number}</span>
+                  <span>{formatDate(assignment.assigned_at)}</span>
+                  <select
+                    aria-label="Opiekun sprzętu"
+                    value={assignment.guardian_name}
+                    onChange={(event) =>
+                      onUpdateAssignment(assignment, "guardian_name", event.target.value)
+                    }
+                  >
+                    <option value="">Brak opiekuna</option>
+                    {guardians.map((guardian) => (
+                      <option key={guardian} value={guardian}>
+                        {guardian}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    aria-label="Relacja sprzętu"
+                    value={assignment.relation}
+                    onChange={(event) =>
+                      onUpdateAssignment(
+                        assignment,
+                        "relation",
+                        event.target.value as EquipmentRelation
+                      )
+                    }
+                  >
+                    {equipmentRelations.map((relation) => (
+                      <option key={relation} value={relation}>
+                        {capitalize(relation)}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    aria-label="Data graniczna"
+                    disabled={assignment.relation !== "wypożyczenie"}
+                    type="date"
+                    value={assignment.boundary_date}
+                    onChange={(event) =>
+                      onUpdateAssignment(assignment, "boundary_date", event.target.value)
+                    }
+                  />
+                  <button className="dangerPill" type="button" onClick={() => onReturn(assignment)}>
+                    Zwróć
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
     </section>
   );
 }
