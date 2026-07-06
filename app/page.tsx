@@ -2558,6 +2558,7 @@ function EquipmentModal({
               onChange={(value) => update("name", value)}
             />
             <EditorField
+              className="serialNumberField"
               label="Nr seryjny"
               value={draft.serial_number}
               onChange={(value) => update("serial_number", value)}

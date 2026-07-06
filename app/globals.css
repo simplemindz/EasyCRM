@@ -2854,6 +2854,253 @@ h2 {
   border-radius: 8px !important;
 }
 
+/* Final visual tuning against the gray reference */
+.brandLogo {
+  height: 38px;
+  margin-bottom: 168px;
+  width: 38px;
+}
+
+.navList {
+  gap: 20px;
+}
+
+.navItem {
+  font-size: 9px;
+  min-width: 54px;
+}
+
+.navItem svg {
+  height: 20px;
+  padding: 11px;
+  width: 20px;
+}
+
+.navItem.muted:hover svg {
+  color: #8f8f8f;
+}
+
+.userBlock {
+  min-height: 96px;
+  padding: 13px 8px;
+  width: 50px;
+}
+
+.userBlock strong {
+  font-size: 8px;
+}
+
+.userBlock small,
+.userBlock button {
+  font-size: 7px;
+}
+
+.glassPanel,
+.modalPanel,
+.actionsPanel,
+.partnersPanel,
+.equipmentPanel,
+.partnersContent,
+.partnersContent.isDetailsOpen,
+.detailCard,
+.detailsTableCard,
+.accountPanel,
+.accountSettings,
+.historyRows,
+.editorContacts,
+.editorEmptyList,
+.editorAccountPanel,
+.equipmentRelationPanel,
+.equipmentChoicePanel {
+  background: #ffffff;
+}
+
+.actionsPanel,
+.partnersPanel,
+.equipmentPanel {
+  padding: 28px 34px 30px;
+}
+
+.partnersContent {
+  margin-top: 18px;
+  padding: 26px 28px 30px;
+}
+
+.panelToolbar {
+  right: 28px;
+  top: 34px;
+}
+
+.partnerSegmentTabs {
+  min-height: 48px;
+  width: min(920px, 47vw);
+}
+
+.partnerSegmentTabs button {
+  font-size: 12px;
+}
+
+.partnersHeader,
+.partnerRow {
+  grid-template-columns: minmax(210px, 0.92fr) minmax(120px, 0.34fr) minmax(360px, 1.16fr) minmax(650px, 2.35fr) 72px;
+}
+
+.partnersHeader {
+  margin-top: 24px;
+  min-height: 48px;
+  padding: 0 26px 0 42px;
+}
+
+.partnerRows {
+  gap: 10px;
+  grid-auto-rows: 64px;
+}
+
+.partnerRow {
+  height: 64px;
+  padding: 0 0 0 42px;
+}
+
+.relationStatus {
+  background: #030303;
+  color: #ffffff;
+  height: 52px;
+}
+
+.relationStatus .statusDot {
+  border-radius: 999px !important;
+  height: 34px;
+  width: 18px;
+}
+
+.nextAction,
+.ghostAction {
+  background: #d9d9d9;
+  color: rgba(20, 24, 32, 0.78);
+  height: 52px;
+}
+
+.nextAction .statusSelect {
+  background: #d0d0d0;
+  border-radius: 12px !important;
+  min-height: 52px;
+}
+
+.openPartnerButton {
+  border-left: 1px solid rgba(20, 24, 32, 0.08);
+  height: 52px;
+  width: 58px;
+}
+
+.sortControl select,
+.equipmentFilters .sortControl select {
+  background: #d2d2d2;
+  color: rgba(20, 24, 32, 0.86);
+}
+
+.sortControl {
+  color: rgba(20, 24, 32, 0.64);
+}
+
+.actionBody,
+.quickButton,
+.partnerRow,
+.contactRow,
+.detailsTableRow,
+.accountRow,
+.historyRow,
+.equipmentRegistryRow,
+.equipmentAvailableRow,
+.equipmentAssignedRow,
+.equipmentChoiceRow,
+.detailField input,
+.detailArea textarea,
+.editorField input,
+.editorField select,
+.editorArea textarea,
+.editorContactRow input,
+.editorAccountPanel input,
+.editorAccountRow input,
+.field input,
+.field select,
+.equipmentRelationPanel,
+.editorEmptyList,
+.editorContacts,
+.editorAccountPanel,
+.detailCard,
+.detailsTableCard,
+.accountPanel,
+.accountSettings,
+.historyRows {
+  background: #eeeeee;
+}
+
+.equipmentAssignedRow select,
+.equipmentAssignedRow input,
+.partnerEquipmentTable select,
+.partnerEquipmentTable input,
+.equipmentAssignmentEditor select,
+.equipmentAssignmentEditor input {
+  background: #d7d7d7;
+}
+
+.equipmentHero {
+  background: #d6d6d6;
+}
+
+.equipmentPanelTop {
+  grid-template-columns: minmax(220px, 1fr) minmax(560px, 840px) minmax(220px, 1fr);
+}
+
+.equipmentStatusTabs,
+.partnerTabs {
+  background: #eeeeee;
+}
+
+.equipmentFilters {
+  padding-top: 40px;
+}
+
+.equipmentRegistryHeader {
+  padding-left: 22px;
+}
+
+.equipmentRegistryRow {
+  min-height: 56px;
+  padding-left: 22px;
+}
+
+.serialNumberField {
+  align-self: stretch;
+  background: #eeeeee;
+  border-radius: 0 !important;
+  gap: 22px;
+  justify-items: center;
+  padding: 18px 22px 22px;
+}
+
+.serialNumberField span {
+  color: #111111;
+  font-size: 20px;
+  text-align: center;
+}
+
+.serialNumberField input {
+  background: #030303 !important;
+  border-radius: 999px !important;
+  color: #ffffff !important;
+  font-size: 26px !important;
+  font-weight: 800;
+  min-height: 68px !important;
+  padding: 0 34px !important;
+  text-align: center;
+}
+
+.equipmentCreateGrid {
+  align-items: stretch;
+  grid-template-columns: 120px minmax(210px, 0.8fr) minmax(220px, 1fr) minmax(330px, 1.35fr) minmax(160px, 0.7fr) minmax(220px, 0.9fr);
+}
+
 @media (max-width: 1100px) {
   .appShell {
     grid-template-columns: 94px minmax(0, 1fr);
