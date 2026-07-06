@@ -3273,6 +3273,107 @@ h2 {
   padding-top: 32px;
 }
 
+/* Final sizing pass */
+.partnerSegmentTabs,
+.partnerTabs,
+.equipmentStatusTabs {
+  border-width: 1px;
+  min-height: 30px;
+  padding: 2px;
+}
+
+.partnerTabs,
+.equipmentStatusTabs {
+  min-height: 30px;
+}
+
+.partnerSegmentTabs button,
+.partnerTabs button,
+.equipmentStatusTabs button {
+  font-size: 10.5px;
+  line-height: 1;
+}
+
+.partnersPanel,
+.equipmentPanel,
+.actionsPanel {
+  font-size: 12px;
+}
+
+.partnersPanel h1,
+.equipmentPanel h1,
+.actionsPanel h1,
+.partnerDetailsTop h2 {
+  font-size: 20px;
+}
+
+.partnersHeader,
+.equipmentRegistryHeader,
+.equipmentAvailableHeader,
+.equipmentAssignedHeader,
+.detailsTableHeader,
+.accountHeader {
+  font-size: 10px;
+}
+
+.partnerRow,
+.equipmentRegistryRow,
+.equipmentAvailableRow,
+.equipmentAssignedRow,
+.equipmentChoiceRow,
+.actionBody,
+.nextAction,
+.ghostAction,
+.relationStatus,
+.statusSelect,
+.sortControl select {
+  font-size: 12px;
+}
+
+.equipmentRegistry-własny .equipmentRegistryHeader,
+.equipmentRegistry-własny .equipmentRegistryRow,
+.equipmentRegistry-nieoznaczony .equipmentRegistryHeader,
+.equipmentRegistry-nieoznaczony .equipmentRegistryRow {
+  grid-template-columns: 92px 86px 120px 160px minmax(430px, 1fr);
+}
+
+.equipmentRegistry-własny .equipmentRegistryHeader > span:nth-child(-n + 4),
+.equipmentRegistry-własny .equipmentRegistryRow > span:nth-child(-n + 4),
+.equipmentRegistry-własny .equipmentRegistryRow > strong,
+.equipmentRegistry-nieoznaczony .equipmentRegistryHeader > span:nth-child(-n + 4),
+.equipmentRegistry-nieoznaczony .equipmentRegistryRow > span:nth-child(-n + 4),
+.equipmentRegistry-nieoznaczony .equipmentRegistryRow > strong {
+  justify-self: end;
+  text-align: right;
+}
+
+.equipmentRegistry-własny .equipmentRegistryActions,
+.equipmentRegistry-nieoznaczony .equipmentRegistryActions {
+  justify-self: end;
+}
+
+.equipmentRegistry-własny .serialBadge,
+.equipmentRegistry-nieoznaczony .serialBadge {
+  min-width: 138px;
+  padding: 0 14px;
+}
+
+.equipmentRegistryActions {
+  min-width: 420px;
+}
+
+.equipmentRegistryActions button {
+  min-width: 126px;
+}
+
+.serialBadge {
+  font-size: 11px;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 @media (max-width: 1100px) {
   .appShell {
     grid-template-columns: 94px minmax(0, 1fr);

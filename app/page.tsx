@@ -952,10 +952,6 @@ export default function Home() {
   }
 
   function growActionsPanel() {
-    if (openPartner) {
-      return;
-    }
-
     setPanelLayout((current) => {
       if (current === "top-collapsed") {
         return "balanced";
@@ -966,10 +962,6 @@ export default function Home() {
   }
 
   function shrinkActionsPanel() {
-    if (openPartner) {
-      return;
-    }
-
     setPanelLayout((current) => {
       if (current === "bottom-collapsed") {
         return "balanced";
@@ -1689,8 +1681,8 @@ export default function Home() {
         <section className="glassPanel actionsPanel">
           <PanelControls
             title="Najbliższe działania"
-            upDisabled={Boolean(openPartner) || panelLayout === "bottom-collapsed"}
-            downDisabled={Boolean(openPartner) || panelLayout === "top-collapsed"}
+            upDisabled={panelLayout === "bottom-collapsed"}
+            downDisabled={panelLayout === "top-collapsed"}
             onGrow={growActionsPanel}
             onShrink={shrinkActionsPanel}
           />
