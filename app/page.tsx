@@ -917,8 +917,13 @@ export default function Home() {
 
     return lookup;
   }, [activeAssignments]);
+  const getEffectiveEquipmentStatus = (item: Equipment): EquipmentStatus => {
+    const assignment = assignmentLookup.get(item.id);
+
+    return assignment ? getEquipmentStatusForAssignment(assignment.relation) : item.status;
+  };
   const filteredEquipment = equipment
-    .filter((item) => item.status === equipmentStatusTab)
+    .filter((item) => getEffectiveEquipmentStatus(item) === equipmentStatusTab)
     .filter((item) =>
       equipmentCategory === "wszystkie" ? true : item.equipment_type === equipmentCategory
     )
@@ -952,6 +957,10 @@ export default function Home() {
   }
 
   function growActionsPanel() {
+    if (openPartnerId) {
+      closePartnerDetails();
+    }
+
     setPanelLayout((current) => {
       if (current === "top-collapsed") {
         return "balanced";
