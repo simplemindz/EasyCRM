@@ -2165,7 +2165,7 @@ function EquipmentView({
                   <strong>{item.internal_id}</strong>
                   <span>{capitalize(item.equipment_type)}</span>
                   <span>{item.name}</span>
-                  <span>{item.serial_number}</span>
+                  <span className="serialBadge">{item.serial_number}</span>
                   {activeTab === "wypożyczony" ? (
                     <>
                       <span>{formatDate(assignment?.assigned_at ?? "")}</span>
@@ -2669,7 +2669,7 @@ function EquipmentAssignmentModal({
                     <span>{item.internal_id}</span>
                     <span>{capitalize(item.equipment_type)}</span>
                     <span>{item.name}</span>
-                    <span>{item.serial_number}</span>
+                    <span className="serialBadge">{item.serial_number}</span>
                     <button
                       type="button"
                       onClick={() => update("equipment_id", item.id)}
@@ -2695,7 +2695,7 @@ function EquipmentAssignmentModal({
                         <span>{item.internal_id}</span>
                         <span>{capitalize(item.equipment_type)}</span>
                         <span>{item.name}</span>
-                        <span>{item.serial_number}</span>
+                        <span className="serialBadge">{item.serial_number}</span>
                         <small>Przypisane do: {assignedPartner}</small>
                       </div>
                     );
@@ -2729,7 +2729,7 @@ function EquipmentAssignmentModal({
                       <span>{item.internal_id}</span>
                       <span>{capitalize(item.equipment_type)}</span>
                       <span>{item.name}</span>
-                      <span>{item.serial_number}</span>
+                      <span className="serialBadge">{item.serial_number}</span>
                       <span>{assignment.guardian_name}</span>
                       <span>{capitalize(assignment.relation)}</span>
                       <span>{assignment.boundary_date}</span>
@@ -3008,7 +3008,7 @@ function PartnerEquipmentTab({
                 <span>{item.internal_id}</span>
                 <span>{capitalize(item.equipment_type)}</span>
                 <span>{item.name}</span>
-                <span>{item.serial_number}</span>
+                <span className="serialBadge">{item.serial_number}</span>
                 <button type="button" onClick={() => onAssignEquipment(partner, item)}>
                   Przypisz
                 </button>
@@ -3045,7 +3045,7 @@ function PartnerEquipmentTab({
                   <span>{item.internal_id}</span>
                   <span>{capitalize(item.equipment_type)}</span>
                   <span>{item.name}</span>
-                  <span>{item.serial_number}</span>
+                  <span className="serialBadge">{item.serial_number}</span>
                   <span>{formatDate(assignment.assigned_at)}</span>
                   <select
                     aria-label="Opiekun sprzętu"

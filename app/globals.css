@@ -3101,6 +3101,178 @@ h2 {
   grid-template-columns: 120px minmax(210px, 0.8fr) minmax(220px, 1fr) minmax(330px, 1.35fr) minmax(160px, 0.7fr) minmax(220px, 0.9fr);
 }
 
+/* Unified tabs, dropdowns, equipment serials and list alignment */
+.equipmentView {
+  grid-template-rows: 112px minmax(0, 1fr);
+}
+
+.equipmentHero {
+  min-height: 112px;
+}
+
+.partnerSegmentTabs,
+.partnerTabs,
+.equipmentStatusTabs {
+  background: #ffffff;
+  border: 2px solid #7c7c7c;
+  border-radius: 999px !important;
+  min-height: 38px;
+  padding: 3px;
+}
+
+.partnerSegmentTabs {
+  width: min(920px, 48vw);
+}
+
+.partnerTabs {
+  min-height: 38px;
+}
+
+.equipmentStatusTabs {
+  min-height: 38px;
+}
+
+.partnerSegmentTabs button,
+.partnerTabs button,
+.equipmentStatusTabs button {
+  border-radius: 999px !important;
+  color: #adadad;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.partnerSegmentTabs button.active,
+.partnerTabs button.active,
+.equipmentStatusTabs button.active {
+  background: #030303;
+  color: #ffffff;
+}
+
+.sortControl {
+  gap: 14px;
+}
+
+.sortControl span {
+  color: #1f1f1f;
+  font-size: 12px;
+}
+
+.sortControl select,
+.equipmentFilters .sortControl select,
+.field select,
+.editorField select,
+.equipmentAssignedRow select,
+.partnerEquipmentTable select,
+.equipmentAssignmentEditor select {
+  appearance: none;
+  background: #eeeeee !important;
+  border: 0;
+  border-radius: 10px !important;
+  color: #171717;
+  font-size: 14px;
+  min-height: 46px;
+  padding: 0 58px 0 20px;
+}
+
+.sortControl svg,
+.statusSelect svg:last-child,
+.editorSelect svg {
+  color: #000000;
+  height: 24px;
+  right: 18px;
+  width: 24px;
+}
+
+.field select + svg,
+.editorField select + svg {
+  color: #000000;
+}
+
+.dropdownButton svg:last-child {
+  color: currentColor;
+}
+
+.serialBadge {
+  align-items: center;
+  background: #030303;
+  border-radius: 999px !important;
+  color: #ffffff;
+  display: inline-flex;
+  font-weight: 800;
+  justify-content: center;
+  min-height: 30px;
+  min-width: 120px;
+  padding: 0 18px;
+  text-align: center;
+}
+
+.equipmentRegistryRow .serialBadge,
+.equipmentAvailableRow .serialBadge,
+.equipmentAssignedRow .serialBadge,
+.equipmentChoiceRow .serialBadge {
+  font-size: 11px;
+}
+
+.equipmentRegistryRows,
+.equipmentRelationRows,
+.equipmentChoiceRows,
+.equipmentAssignedRows {
+  position: relative;
+}
+
+.equipmentRegistryRows > .emptyState,
+.equipmentRelationRows > .emptyState,
+.equipmentChoiceRows > .emptyState,
+.equipmentAssignedRows > .emptyState {
+  align-self: start;
+  justify-self: center;
+  margin-top: 72px;
+  text-align: center;
+}
+
+.partnersContent {
+  overflow: hidden;
+}
+
+.partnerRows {
+  overflow-x: hidden;
+}
+
+.partnersHeader,
+.partnerRow {
+  grid-template-columns: minmax(170px, 0.92fr) minmax(110px, 0.34fr) minmax(300px, 1.12fr) minmax(420px, 1.75fr) 54px;
+  min-width: 0;
+}
+
+.partnerRow {
+  column-gap: 16px;
+  padding-left: 34px;
+}
+
+.partnersHeader {
+  column-gap: 16px;
+  padding-left: 34px;
+  padding-right: 0;
+}
+
+.nextAction {
+  min-width: 0;
+}
+
+.nextAction .statusSelect {
+  flex: 0 0 180px;
+  min-width: 180px;
+}
+
+.openPartnerButton {
+  width: 48px;
+}
+
+.equipmentFilters {
+  padding-bottom: 20px;
+  padding-top: 32px;
+}
+
 @media (max-width: 1100px) {
   .appShell {
     grid-template-columns: 94px minmax(0, 1fr);
