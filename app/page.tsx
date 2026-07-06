@@ -647,7 +647,7 @@ function normalizeEquipmentAssignment(
 }
 
 function normalizeForId(value: string) {
-  return value
+  return (value || "inne")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/ł/g, "l")
@@ -1016,16 +1016,18 @@ export default function Home() {
   }
 
   function openEquipmentModal(item?: Equipment) {
-    setEditingEquipmentId(item?.id ?? "");
+    const editedItem = item && "internal_id" in item ? item : null;
+
+    setEditingEquipmentId(editedItem?.id ?? "");
     setEquipmentDraft(
-      item
+      editedItem
         ? {
-            equipment_type: item.equipment_type,
-            name: item.name,
-            serial_number: item.serial_number,
-            purchase_date: item.purchase_date,
-            purchase_amount: item.purchase_amount,
-            purchase_currency: item.purchase_currency
+            equipment_type: editedItem.equipment_type,
+            name: editedItem.name,
+            serial_number: editedItem.serial_number,
+            purchase_date: editedItem.purchase_date,
+            purchase_amount: editedItem.purchase_amount,
+            purchase_currency: editedItem.purchase_currency
           }
         : emptyEquipmentDraft
     );
@@ -2072,7 +2074,7 @@ function EquipmentView({
 
   return (
     <section className="equipmentView">
-      <button className="equipmentHero" type="button" onClick={onCreateEquipment}>
+      <button className="equipmentHero" type="button" onClick={() => onCreateEquipment()}>
         Dodaj nowy sprzęt
       </button>
 
@@ -2340,7 +2342,7 @@ function PartnerEditorModal({
             {tab === "equipment" ? (
               <section className="editorEmptyList">
                 <span>Ewidencja sprzętu</span>
-                <button className="addInlineButton" type="button" onClick={onOpenEquipmentModal}>
+                <button className="addInlineButton" type="button" onClick={() => onOpenEquipmentModal()}>
                   + Dodaj nowe urządzenie do bazy
                 </button>
               </section>
@@ -2982,7 +2984,7 @@ function PartnerEquipmentTab({
       <div className="equipmentCardHeader">
         <span>Dostępne urządzenia</span>
         <div>
-          <button className="addInlineButton" type="button" onClick={onCreateEquipment}>
+          <button className="addInlineButton" type="button" onClick={() => onCreateEquipment()}>
             + Dodaj nowe urządzenie
           </button>
         </div>
@@ -3534,5 +3536,5 @@ function getDateTimestamp(value?: string) {
 }
 
 function capitalize(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+  return value ? value.charAt(0).toUpperCase() + value.slice(1) : "";
 }

@@ -4,14 +4,14 @@
   --text: #141820;
   --muted: rgba(20, 24, 32, 0.62);
   --faint: rgba(20, 24, 32, 0.36);
-  --panel: rgba(219, 230, 246, 0.82);
-  --panel-strong: rgba(198, 211, 232, 0.7);
-  --row: rgba(205, 217, 236, 0.78);
-  --input: rgba(193, 205, 226, 0.74);
+  --panel: rgba(255, 255, 255, 0.92);
+  --panel-strong: rgba(238, 238, 238, 0.9);
+  --row: rgba(237, 237, 237, 0.92);
+  --input: rgba(92, 92, 92, 0.96);
   --line: rgba(20, 24, 32, 0.22);
   --shadow: none;
-  --radius: 0;
-  --radius-large: 0;
+  --radius: 12px;
+  --radius-large: 20px;
 }
 
 * {
@@ -27,7 +27,7 @@ body {
 }
 
 body {
-  background: #a9b8cf;
+  background: #e7e7e7;
   color: var(--text);
   font-family: Poppins, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -43,18 +43,16 @@ button {
 }
 
 .appShell {
-  background:
-    linear-gradient(180deg, rgba(167, 181, 205, 0.96) 0%, rgba(221, 232, 247, 0.92) 68%, rgba(248, 253, 255, 0.98) 100%),
-    radial-gradient(circle at 52% 0%, rgba(237, 243, 253, 0.72), rgba(169, 184, 207, 0.1) 34%, transparent 58%);
+  background: #e7e7e7;
   display: grid;
-  grid-template-columns: 205px minmax(0, 1fr);
+  grid-template-columns: 148px minmax(0, 1fr);
   height: 100dvh;
   min-height: 100dvh;
   overflow: hidden;
 }
 
 .appShell::before {
-  background: linear-gradient(90deg, rgba(134, 149, 174, 0.22), transparent 28%, rgba(255, 255, 255, 0.18));
+  background: transparent;
   content: "";
   inset: 0;
   pointer-events: none;
@@ -70,31 +68,37 @@ button {
 }
 
 .sidebar {
+  align-items: center;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding: 52px 30px 34px;
+  padding: 36px 20px 34px;
 }
 
 .brandLogo {
   height: 54px;
-  margin: 0 auto 86px;
+  margin: 0 auto 160px;
   object-fit: contain;
   width: 54px;
 }
 
 .navList {
   display: grid;
-  gap: 26px;
+  gap: 24px;
+  justify-items: center;
+  width: 100%;
 }
 
 .navItem {
   align-items: center;
   color: var(--text);
   display: flex;
-  font-size: 12px;
+  flex-direction: column;
+  font-size: 10px;
   font-weight: 700;
-  gap: 16px;
+  gap: 8px;
+  justify-content: center;
+  text-align: center;
 }
 
 .navButton {
@@ -109,10 +113,16 @@ button {
 }
 
 .userBlock {
+  align-items: center;
+  background: #ffffff;
   color: rgba(20, 24, 32, 0.36);
   display: grid;
   gap: 4px;
+  justify-items: center;
   margin-top: auto;
+  min-height: 126px;
+  padding: 16px 10px;
+  width: 62px;
 }
 
 .userBlock span,
@@ -1380,10 +1390,6 @@ h2 {
   color: #ffffff;
 }
 
-* {
-  border-radius: 0 !important;
-}
-
 .brandLogo {
   filter: brightness(0);
 }
@@ -2578,6 +2584,274 @@ h2 {
   outline: 0;
   padding: 0 10px;
   width: 100%;
+}
+
+/* Rounded gray visual system */
+.appShell {
+  background: #e8e8e8;
+  grid-template-columns: 148px minmax(0, 1fr);
+}
+
+.relationsView,
+.equipmentView {
+  gap: 22px;
+  padding: 36px 22px 26px 0;
+}
+
+.equipmentView {
+  grid-template-rows: 188px minmax(0, 1fr);
+}
+
+.sidebar {
+  padding: 36px 18px 34px;
+}
+
+.brandLogo {
+  height: 54px;
+  margin-bottom: 160px;
+  width: 54px;
+}
+
+.navList {
+  gap: 22px;
+}
+
+.navItem {
+  color: rgba(20, 24, 32, 0.3);
+  min-width: 74px;
+}
+
+.navButton {
+  justify-self: center;
+}
+
+.navItem svg {
+  background: #ffffff;
+  border-radius: 50% !important;
+  box-sizing: content-box;
+  color: rgba(20, 24, 32, 0.28);
+  height: 28px;
+  padding: 16px;
+  width: 28px;
+}
+
+.navItem.active {
+  color: #080808;
+}
+
+.navItem.active svg {
+  background: #030303;
+  color: #ffffff;
+}
+
+.navItem.muted:hover svg {
+  color: #2d8cff;
+}
+
+.userBlock {
+  border-radius: 999px !important;
+  color: rgba(20, 24, 32, 0.6);
+  width: 62px;
+}
+
+.userBlock span {
+  display: none;
+}
+
+.userBlock strong,
+.userBlock small,
+.userBlock button {
+  text-align: center;
+}
+
+.userBlock strong {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-top: 0;
+}
+
+.userBlock small,
+.userBlock button {
+  color: rgba(20, 24, 32, 0.72);
+  font-size: 8px;
+  font-weight: 400;
+}
+
+.glassPanel,
+.modalPanel,
+.actionsPanel,
+.partnersPanel,
+.equipmentPanel,
+.partnersContent,
+.partnersContent.isDetailsOpen,
+.detailCard,
+.detailsTableCard,
+.accountPanel,
+.accountSettings,
+.historyRows,
+.editorContacts,
+.editorEmptyList,
+.editorAccountPanel,
+.equipmentRelationPanel,
+.equipmentChoicePanel {
+  background: rgba(255, 255, 255, 0.92);
+  border: 0;
+  border-radius: 20px !important;
+  box-shadow: none;
+}
+
+.actionsPanel,
+.partnersPanel,
+.equipmentPanel {
+  padding: 26px 34px 28px;
+}
+
+.equipmentHero,
+.quickButton {
+  background: #d6d6d6;
+  border: 0;
+  border-radius: 20px !important;
+  color: rgba(20, 24, 32, 0.9);
+}
+
+.equipmentHero:hover,
+.quickButton:hover {
+  background: #cecece;
+  color: rgba(20, 24, 32, 0.9);
+}
+
+.panelHeader h1,
+.equipmentPanelTop h1,
+.partnerDetailsTop h2 {
+  color: #151515;
+  font-weight: 400;
+}
+
+.partnerSegmentTabs,
+.partnerTabs,
+.equipmentStatusTabs {
+  background: #eeeeee;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.partnerSegmentTabs button,
+.partnerTabs button,
+.equipmentStatusTabs button {
+  border-radius: 8px !important;
+}
+
+.partnerSegmentTabs button.active,
+.partnerTabs button.active,
+.equipmentStatusTabs button.active {
+  background: #030303;
+  color: #ffffff;
+}
+
+.sortControl select,
+.field select,
+.field input,
+.detailField input,
+.detailArea textarea,
+.editorField input,
+.editorField select,
+.editorArea textarea,
+.editorContactRow input,
+.editorAccountPanel input,
+.editorAccountRow input,
+.modalStatusSelect,
+.relationStatus,
+.statusSelect,
+.ghostAction,
+.nextAction,
+.actionBody .statusSelect,
+.nextAction .statusSelect,
+.historyRow .statusSelect,
+.partnerEquipmentTable select,
+.partnerEquipmentTable input,
+.equipmentAssignmentEditor select,
+.equipmentAssignmentEditor input,
+.equipmentAssignedRow select,
+.equipmentAssignedRow input {
+  border-radius: 10px !important;
+}
+
+.sortControl select,
+.equipmentFilters .sortControl select {
+  background: #5f5f5f;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.partnerRow,
+.actionBody,
+.contactRow,
+.detailsTableRow,
+.accountRow,
+.historyRow,
+.equipmentRegistryRow,
+.equipmentAvailableRow,
+.equipmentAssignedRow,
+.equipmentChoiceRow {
+  background: #eeeeee;
+  border-radius: 10px !important;
+}
+
+.detailsTableHeader,
+.equipmentRegistryHeader,
+.equipmentAvailableHeader,
+.equipmentAssignedHeader,
+.partnersHeader {
+  color: rgba(20, 24, 32, 0.68);
+}
+
+.addPartnerButton,
+.partnerEditorActions button,
+.partnerDetailsActions button,
+.modalActions button,
+.equipmentRegistryActions button,
+.equipmentAvailableRow button,
+.equipmentAssignedRow button,
+.equipmentChoiceRow button,
+.contactRow button,
+.detailsTableRow button,
+.accountDeleteButton {
+  border-radius: 10px !important;
+}
+
+.equipmentRegistryActions button,
+.equipmentAvailableRow button,
+.equipmentAssignedRow button,
+.equipmentChoiceRow button {
+  background: #5b5b5b;
+}
+
+.dangerPill,
+.partnerDetailsActions .dangerAction,
+.accountDeleteButton {
+  background: #bd5555 !important;
+}
+
+.modalBackdrop {
+  background: rgba(232, 232, 232, 0.82);
+}
+
+.modalPanel {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.equipmentCreatePanel {
+  margin-top: 18dvh;
+  width: calc(100vw - 210px);
+}
+
+.dropdownMenu {
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+
+.dropdownMenu button {
+  border-radius: 8px !important;
 }
 
 @media (max-width: 1100px) {
