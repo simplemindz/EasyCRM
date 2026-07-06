@@ -2193,6 +2193,11 @@ function EquipmentView({
                         Oznacz jako własny
                       </button>
                     ) : null}
+                    {activeTab === "własny" ? (
+                      <button type="button" onClick={() => onUpdateStatus(item.id, "nieoznaczony")}>
+                        Przenieś do nieoznaczony
+                      </button>
+                    ) : null}
                     <button type="button" onClick={() => onEditEquipment(item)}>
                       Edytuj
                     </button>

@@ -3548,3 +3548,134 @@ h2 {
   justify-self: stretch;
   width: 64px;
 }
+
+/* Equipment create/edit modal visual target */
+.modalBackdrop {
+  align-items: center;
+  backdrop-filter: blur(24px);
+  background: rgba(232, 232, 232, 0.58);
+  padding: 28px;
+}
+
+.equipmentCreatePanel {
+  align-self: center;
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 18px !important;
+  margin-top: 0;
+  max-width: none;
+  padding: 34px 42px 30px;
+  width: calc(100vw - 56px);
+}
+
+.equipmentCreateForm {
+  gap: 32px;
+}
+
+.equipmentCreateForm h2 {
+  color: #111111;
+  font-size: 18px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.equipmentCreateGrid {
+  align-items: end;
+  gap: 24px;
+  grid-template-columns: 116px minmax(180px, 0.85fr) minmax(230px, 1fr) minmax(330px, 1.25fr) minmax(170px, 0.75fr) minmax(170px, 0.72fr) 82px;
+}
+
+.equipmentGeneratedId {
+  gap: 14px;
+}
+
+.equipmentGeneratedId span,
+.equipmentCreateGrid .field span,
+.equipmentCreateGrid .editorField span,
+.equipmentPriceFields .field span {
+  color: #2c2c2c;
+  font-size: 9px;
+  text-align: left;
+}
+
+.equipmentGeneratedId strong {
+  color: #111111;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 44px;
+  min-height: 44px;
+}
+
+.equipmentCreateGrid .field,
+.equipmentCreateGrid .editorField,
+.serialNumberField {
+  background: transparent;
+  gap: 10px;
+  padding: 0;
+}
+
+.equipmentCreateGrid .field select,
+.equipmentCreateGrid .field input,
+.equipmentCreateGrid .editorField input,
+.equipmentCreateGrid .editorField select,
+.serialNumberField input {
+  background: #eeeeee !important;
+  border: 0;
+  border-radius: 12px !important;
+  color: #151515 !important;
+  font-size: 12px !important;
+  font-weight: 400;
+  min-height: 42px !important;
+  padding: 0 18px !important;
+  text-align: left;
+}
+
+.equipmentCreateGrid .field select {
+  padding-right: 42px !important;
+}
+
+.serialNumberField span {
+  color: #2c2c2c;
+  font-size: 9px;
+}
+
+.equipmentPriceFields {
+  display: contents;
+}
+
+.equipmentPriceFields .editorField,
+.equipmentPriceFields .field {
+  min-width: 0;
+}
+
+.equipmentPriceFields .field select {
+  min-width: 0;
+  padding-left: 18px !important;
+  padding-right: 34px !important;
+}
+
+.equipmentCreatePanel .modalActions {
+  align-items: center;
+  display: grid;
+  gap: 72px;
+  grid-template-columns: minmax(180px, 240px) minmax(220px, 320px);
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.equipmentCreatePanel .modalActions button {
+  border: 0;
+  border-radius: 999px !important;
+  color: #111111;
+  font-size: 12px;
+  font-weight: 800;
+  min-height: 46px;
+}
+
+.equipmentCreatePanel .modalActions button[type="button"] {
+  background: transparent;
+}
+
+.equipmentCreatePanel .modalActions button[type="submit"] {
+  background: #737373;
+  color: #ffffff;
+}
